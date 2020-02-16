@@ -101,7 +101,7 @@
             this.txt_IPC.CustomButton.Visible = false;
             this.txt_IPC.ForeColor = System.Drawing.Color.Lime;
             this.txt_IPC.Lines = new string[] {
-        "127.118.119.122"};
+        "127.0.0.1"};
             this.txt_IPC.Location = new System.Drawing.Point(127, 30);
             this.txt_IPC.MaxLength = 32767;
             this.txt_IPC.Name = "txt_IPC";
@@ -113,7 +113,7 @@
             this.txt_IPC.ShortcutsEnabled = true;
             this.txt_IPC.Size = new System.Drawing.Size(150, 23);
             this.txt_IPC.TabIndex = 7;
-            this.txt_IPC.Text = "127.118.119.122";
+            this.txt_IPC.Text = "127.0.0.1";
             this.txt_IPC.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.txt_IPC.UseCustomForeColor = true;
             this.txt_IPC.UseSelectable = true;
@@ -170,7 +170,7 @@
             this.txt_steamAPI.CustomButton.Visible = false;
             this.txt_steamAPI.ForeColor = System.Drawing.Color.Lime;
             this.txt_steamAPI.Lines = new string[] {
-        "64316556E0CC54AA8606D099D5E9DBFC"};
+        "SteamApiKey"};
             this.txt_steamAPI.Location = new System.Drawing.Point(522, 30);
             this.txt_steamAPI.MaxLength = 32767;
             this.txt_steamAPI.Name = "txt_steamAPI";
@@ -182,7 +182,7 @@
             this.txt_steamAPI.ShortcutsEnabled = true;
             this.txt_steamAPI.Size = new System.Drawing.Size(236, 23);
             this.txt_steamAPI.TabIndex = 16;
-            this.txt_steamAPI.Text = "64316556E0CC54AA8606D099D5E9DBFC";
+            this.txt_steamAPI.Text = "SteamApiKey";
             this.txt_steamAPI.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.txt_steamAPI.UseCustomForeColor = true;
             this.txt_steamAPI.UseSelectable = true;
@@ -232,7 +232,7 @@
             this.txt_PORT.CustomButton.Visible = false;
             this.txt_PORT.ForeColor = System.Drawing.Color.Lime;
             this.txt_PORT.Lines = new string[] {
-        "1719"};
+        "1242"};
             this.txt_PORT.Location = new System.Drawing.Point(326, 30);
             this.txt_PORT.MaxLength = 32767;
             this.txt_PORT.Name = "txt_PORT";
@@ -244,7 +244,7 @@
             this.txt_PORT.ShortcutsEnabled = true;
             this.txt_PORT.Size = new System.Drawing.Size(68, 23);
             this.txt_PORT.TabIndex = 14;
-            this.txt_PORT.Text = "1719";
+            this.txt_PORT.Text = "1242";
             this.txt_PORT.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.txt_PORT.UseCustomForeColor = true;
             this.txt_PORT.UseSelectable = true;
