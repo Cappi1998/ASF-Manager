@@ -1,8 +1,7 @@
 # ASF-Manager
 C# GUI application to activate games on multiple accounts simultaneously
 
-Application communicates directly with [ArchiSteamFarm](https://github.com/JustArchiNET/ArchiSteamFarm) through its IPC interface,
-the application checks which games the account does not have and automatically activates them
+Application communicates directly with [ArchiSteamFarm](https://github.com/JustArchiNET/ArchiSteamFarm) through its IPC interface, checks which games the account does not have and automatically activates them
 
 ![](Screenshots/Gui.png)
 
