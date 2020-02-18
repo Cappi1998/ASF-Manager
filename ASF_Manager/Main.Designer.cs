@@ -44,14 +44,14 @@
             this.btn_ASF_Restart = new MetroFramework.Controls.MetroButton();
             this.btn_bot = new MetroFramework.Controls.MetroButton();
             this.groupbox_função = new System.Windows.Forms.GroupBox();
+            this.btn_open_web = new MetroFramework.Controls.MetroButton();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.txt_max_process = new MetroFramework.Controls.MetroTextBox();
+            this.metroLabel6 = new MetroFramework.Controls.MetroLabel();
+            this.btn_active_paste_open = new MetroFramework.Controls.MetroButton();
             this.metroLabel4 = new MetroFramework.Controls.MetroLabel();
             this.btn_bots_update = new MetroFramework.Controls.MetroButton();
             this.btn_wallet = new MetroFramework.Controls.MetroButton();
-            this.btn_open_web = new MetroFramework.Controls.MetroButton();
-            this.btn_active_paste_open = new MetroFramework.Controls.MetroButton();
-            this.metroLabel6 = new MetroFramework.Controls.MetroLabel();
-            this.txt_max_process = new MetroFramework.Controls.MetroTextBox();
             this.group_auth.SuspendLayout();
             this.groupbox_função.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -170,7 +170,7 @@
             this.txt_steamAPI.CustomButton.Visible = false;
             this.txt_steamAPI.ForeColor = System.Drawing.Color.Lime;
             this.txt_steamAPI.Lines = new string[] {
-        "SteamApiKey"};
+        "SteamAPIKey"};
             this.txt_steamAPI.Location = new System.Drawing.Point(522, 30);
             this.txt_steamAPI.MaxLength = 32767;
             this.txt_steamAPI.Name = "txt_steamAPI";
@@ -182,7 +182,7 @@
             this.txt_steamAPI.ShortcutsEnabled = true;
             this.txt_steamAPI.Size = new System.Drawing.Size(236, 23);
             this.txt_steamAPI.TabIndex = 16;
-            this.txt_steamAPI.Text = "SteamApiKey";
+            this.txt_steamAPI.Text = "SteamAPIKey";
             this.txt_steamAPI.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.txt_steamAPI.UseCustomForeColor = true;
             this.txt_steamAPI.UseSelectable = true;
@@ -361,6 +361,17 @@
             this.groupbox_função.Text = "Manager";
             this.groupbox_função.Visible = false;
             // 
+            // btn_open_web
+            // 
+            this.btn_open_web.Location = new System.Drawing.Point(266, 378);
+            this.btn_open_web.Name = "btn_open_web";
+            this.btn_open_web.Size = new System.Drawing.Size(153, 33);
+            this.btn_open_web.TabIndex = 17;
+            this.btn_open_web.Text = "Open ASF web interface";
+            this.btn_open_web.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.btn_open_web.UseSelectable = true;
+            this.btn_open_web.Click += new System.EventHandler(this.btn_open_web_Click);
+            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.txt_max_process);
@@ -373,74 +384,6 @@
             this.groupBox2.Size = new System.Drawing.Size(525, 180);
             this.groupBox2.TabIndex = 17;
             this.groupBox2.TabStop = false;
-            // 
-            // metroLabel4
-            // 
-            this.metroLabel4.AutoSize = true;
-            this.metroLabel4.Location = new System.Drawing.Point(17, 27);
-            this.metroLabel4.Name = "metroLabel4";
-            this.metroLabel4.Size = new System.Drawing.Size(502, 19);
-            this.metroLabel4.TabIndex = 16;
-            this.metroLabel4.Text = "Remember to update the database if you have manually activate games on accounts";
-            this.metroLabel4.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.metroLabel4.UseCustomBackColor = true;
-            this.metroLabel4.UseCustomForeColor = true;
-            // 
-            // btn_bots_update
-            // 
-            this.btn_bots_update.Location = new System.Drawing.Point(21, 46);
-            this.btn_bots_update.Name = "btn_bots_update";
-            this.btn_bots_update.Size = new System.Drawing.Size(124, 33);
-            this.btn_bots_update.TabIndex = 15;
-            this.btn_bots_update.Text = "Update Bots Database";
-            this.btn_bots_update.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.btn_bots_update.UseSelectable = true;
-            this.btn_bots_update.Click += new System.EventHandler(this.btn_bots_update_Click);
-            // 
-            // btn_wallet
-            // 
-            this.btn_wallet.Location = new System.Drawing.Point(136, 378);
-            this.btn_wallet.Name = "btn_wallet";
-            this.btn_wallet.Size = new System.Drawing.Size(124, 33);
-            this.btn_wallet.TabIndex = 14;
-            this.btn_wallet.Text = "Check Wallet Value";
-            this.btn_wallet.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.btn_wallet.UseSelectable = true;
-            this.btn_wallet.Click += new System.EventHandler(this.btn_wallet_Click);
-            // 
-            // btn_open_web
-            // 
-            this.btn_open_web.Location = new System.Drawing.Point(266, 378);
-            this.btn_open_web.Name = "btn_open_web";
-            this.btn_open_web.Size = new System.Drawing.Size(153, 33);
-            this.btn_open_web.TabIndex = 17;
-            this.btn_open_web.Text = "Open ASF web interface";
-            this.btn_open_web.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.btn_open_web.UseSelectable = true;
-            this.btn_open_web.Click += new System.EventHandler(this.btn_open_web_Click);
-            // 
-            // btn_active_paste_open
-            // 
-            this.btn_active_paste_open.Location = new System.Drawing.Point(427, 141);
-            this.btn_active_paste_open.Name = "btn_active_paste_open";
-            this.btn_active_paste_open.Size = new System.Drawing.Size(95, 33);
-            this.btn_active_paste_open.TabIndex = 17;
-            this.btn_active_paste_open.Text = "Open Folder";
-            this.btn_active_paste_open.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.btn_active_paste_open.UseSelectable = true;
-            this.btn_active_paste_open.Click += new System.EventHandler(this.btn_active_paste_open_Click);
-            // 
-            // metroLabel6
-            // 
-            this.metroLabel6.AutoSize = true;
-            this.metroLabel6.Location = new System.Drawing.Point(17, 61);
-            this.metroLabel6.Name = "metroLabel6";
-            this.metroLabel6.Size = new System.Drawing.Size(325, 19);
-            this.metroLabel6.TabIndex = 18;
-            this.metroLabel6.Text = "maximum number of codes activated in each account:";
-            this.metroLabel6.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.metroLabel6.UseCustomBackColor = true;
-            this.metroLabel6.UseCustomForeColor = true;
             // 
             // txt_max_process
             // 
@@ -476,6 +419,63 @@
             this.txt_max_process.UseSelectable = true;
             this.txt_max_process.WaterMarkColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
             this.txt_max_process.WaterMarkFont = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Pixel);
+            // 
+            // metroLabel6
+            // 
+            this.metroLabel6.AutoSize = true;
+            this.metroLabel6.Location = new System.Drawing.Point(17, 61);
+            this.metroLabel6.Name = "metroLabel6";
+            this.metroLabel6.Size = new System.Drawing.Size(325, 19);
+            this.metroLabel6.TabIndex = 18;
+            this.metroLabel6.Text = "maximum number of codes activated in each account:";
+            this.metroLabel6.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.metroLabel6.UseCustomBackColor = true;
+            this.metroLabel6.UseCustomForeColor = true;
+            // 
+            // btn_active_paste_open
+            // 
+            this.btn_active_paste_open.Location = new System.Drawing.Point(427, 141);
+            this.btn_active_paste_open.Name = "btn_active_paste_open";
+            this.btn_active_paste_open.Size = new System.Drawing.Size(95, 33);
+            this.btn_active_paste_open.TabIndex = 17;
+            this.btn_active_paste_open.Text = "Open Folder";
+            this.btn_active_paste_open.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.btn_active_paste_open.UseSelectable = true;
+            this.btn_active_paste_open.Click += new System.EventHandler(this.btn_active_paste_open_Click);
+            // 
+            // metroLabel4
+            // 
+            this.metroLabel4.AutoSize = true;
+            this.metroLabel4.Location = new System.Drawing.Point(17, 27);
+            this.metroLabel4.Name = "metroLabel4";
+            this.metroLabel4.Size = new System.Drawing.Size(502, 19);
+            this.metroLabel4.TabIndex = 16;
+            this.metroLabel4.Text = "Remember to update the database if you have manually activate games on accounts";
+            this.metroLabel4.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.metroLabel4.UseCustomBackColor = true;
+            this.metroLabel4.UseCustomForeColor = true;
+            // 
+            // btn_bots_update
+            // 
+            this.btn_bots_update.Location = new System.Drawing.Point(21, 46);
+            this.btn_bots_update.Name = "btn_bots_update";
+            this.btn_bots_update.Size = new System.Drawing.Size(124, 33);
+            this.btn_bots_update.TabIndex = 15;
+            this.btn_bots_update.Text = "Update Bots Database";
+            this.btn_bots_update.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.btn_bots_update.UseSelectable = true;
+            this.btn_bots_update.Click += new System.EventHandler(this.btn_bots_update_Click);
+            // 
+            // btn_wallet
+            // 
+            this.btn_wallet.Location = new System.Drawing.Point(136, 378);
+            this.btn_wallet.Name = "btn_wallet";
+            this.btn_wallet.Size = new System.Drawing.Size(124, 33);
+            this.btn_wallet.TabIndex = 14;
+            this.btn_wallet.Text = "Check Wallet Value";
+            this.btn_wallet.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.btn_wallet.UseSelectable = true;
+            this.btn_wallet.Click += new System.EventHandler(this.btn_wallet_Click);
             // 
             // Main
             // 
