@@ -356,6 +356,7 @@ namespace ASF_Manager
         private void btn_active_paste_open_Click(object sender, EventArgs e)
         {
             Process.Start(@"active");
+
         }
 
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
