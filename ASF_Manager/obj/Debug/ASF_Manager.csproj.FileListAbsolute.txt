@@ -32,3 +32,20 @@ C:\Users\rodri\Downloads\Cappi\ASF_Manager\ASF_Manager\obj\Debug\ASF_Manager.csp
 C:\Users\rodri\Downloads\Cappi\ASF_Manager\ASF_Manager\obj\Debug\ASF_Manager.csproj.CopyComplete
 C:\Users\rodri\Downloads\Cappi\ASF_Manager\ASF_Manager\obj\Debug\ASF_Manager.exe
 C:\Users\rodri\Downloads\Cappi\ASF_Manager\ASF_Manager\obj\Debug\ASF_Manager.pdb
+D:\Users\Cappi\Desktop\2 - Arquivos Programação\GitHub\ASF-Manager\ASF_Manager\bin\Debug\ASF_Manager.exe.config
+D:\Users\Cappi\Desktop\2 - Arquivos Programação\GitHub\ASF-Manager\ASF_Manager\bin\Debug\ASF_Manager.exe
+D:\Users\Cappi\Desktop\2 - Arquivos Programação\GitHub\ASF-Manager\ASF_Manager\bin\Debug\ASF_Manager.pdb
+D:\Users\Cappi\Desktop\2 - Arquivos Programação\GitHub\ASF-Manager\ASF_Manager\bin\Debug\MetroFramework.Design.dll
+D:\Users\Cappi\Desktop\2 - Arquivos Programação\GitHub\ASF-Manager\ASF_Manager\bin\Debug\MetroFramework.dll
+D:\Users\Cappi\Desktop\2 - Arquivos Programação\GitHub\ASF-Manager\ASF_Manager\bin\Debug\MetroFramework.Fonts.dll
+D:\Users\Cappi\Desktop\2 - Arquivos Programação\GitHub\ASF-Manager\ASF_Manager\bin\Debug\Newtonsoft.Json.dll
+D:\Users\Cappi\Desktop\2 - Arquivos Programação\GitHub\ASF-Manager\ASF_Manager\bin\Debug\RestSharp.dll
+D:\Users\Cappi\Desktop\2 - Arquivos Programação\GitHub\ASF-Manager\ASF_Manager\bin\Debug\Newtonsoft.Json.xml
+D:\Users\Cappi\Desktop\2 - Arquivos Programação\GitHub\ASF-Manager\ASF_Manager\bin\Debug\RestSharp.xml
+D:\Users\Cappi\Desktop\2 - Arquivos Programação\GitHub\ASF-Manager\ASF_Manager\obj\Debug\ASF_Manager.csprojAssemblyReference.cache
+D:\Users\Cappi\Desktop\2 - Arquivos Programação\GitHub\ASF-Manager\ASF_Manager\obj\Debug\ASF_Manager.Main.resources
+D:\Users\Cappi\Desktop\2 - Arquivos Programação\GitHub\ASF-Manager\ASF_Manager\obj\Debug\ASF_Manager.Properties.Resources.resources
+D:\Users\Cappi\Desktop\2 - Arquivos Programação\GitHub\ASF-Manager\ASF_Manager\obj\Debug\ASF_Manager.csproj.GenerateResource.cache
+D:\Users\Cappi\Desktop\2 - Arquivos Programação\GitHub\ASF-Manager\ASF_Manager\obj\Debug\ASF_Manager.csproj.CopyComplete
+D:\Users\Cappi\Desktop\2 - Arquivos Programação\GitHub\ASF-Manager\ASF_Manager\obj\Debug\ASF_Manager.exe
+D:\Users\Cappi\Desktop\2 - Arquivos Programação\GitHub\ASF-Manager\ASF_Manager\obj\Debug\ASF_Manager.pdb

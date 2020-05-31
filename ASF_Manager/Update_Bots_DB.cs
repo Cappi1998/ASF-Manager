@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,23 @@ namespace ASF_Manager
 
 
             var URL = "http://" + Main._Main.txt_IPC.Text + ":" + Main._Main.txt_PORT.Text + "/Api/Bot/asf";
+
+            if (Main._Main.ckc_usepass.Checked)
+            {
+                if (Main._Main.txt_passIPC.Text == "")
+                {
+
+                    Main._Main.lbl_status_auth.Text = "Please enter the IPC password";
+                    Main._Main.lbl_status_auth.ForeColor = Color.Red;
+                    Main._Main.txt_passIPC.Focus();
+                    return;
+                }
+                else
+                {
+                    URL = "http://" + Main._Main.txt_IPC.Text + ":" + Main._Main.txt_PORT.Text + "/Api/Bot/asf?password=" + Main._Main.txt_passIPC.Text;
+                }
+
+            }
 
             var response = new RequestBuilder(URL)
                 .GET()

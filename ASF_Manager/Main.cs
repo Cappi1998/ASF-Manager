@@ -277,9 +277,27 @@ namespace ASF_Manager
 
         public static void Post_Command_Active_Game(string BotName, long SteamID64 ,string codigo_game, int appid)
         {
-            string URL = "http://127.118.119.122:1719/Api/Command";
+            string URL = "http://" + Main._Main.txt_IPC.Text + ":" + Main._Main.txt_PORT.Text + "/Api/Command";
 
-            
+
+            if (Main._Main.ckc_usepass.Checked)
+            {
+                if (Main._Main.txt_passIPC.Text == "")
+                {
+
+                    Main._Main.lbl_status_auth.Text = "Please enter the IPC password";
+                    Main._Main.lbl_status_auth.ForeColor = Color.Red;
+                    Main._Main.txt_passIPC.Focus();
+                    return;
+                }
+                else
+                {
+                    URL = "http://" + Main._Main.txt_IPC.Text + ":" + Main._Main.txt_PORT.Text + "/Api/Command?password=" + Main._Main.txt_passIPC.Text;
+                }
+
+            }
+
+
             exec_comando comando = new exec_comando { Command = "redeem " + BotName + " " + codigo_game };
 
             string json = JsonConvert.SerializeObject(comando);
