@@ -69,8 +69,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Json_Serealize\ASF_Json_Class.cs" />
-    <Compile Include="Json_Serealize\Json_serealize.cs" />
+    <Compile Include="Models\Exec_Command.cs" />
+    <Compile Include="Models\ASFResponse_BotsResume.cs" />
+    <Compile Include="Models\ASFResponse_MainConfig.cs" />
+    <Compile Include="Models\BotInfo.cs" />
+    <Compile Include="Models\OwnedGames.cs" />
     <Compile Include="RequestBuilder.cs" />
     <Compile Include="RestClient.cs" />
     <Compile Include="Update_Bots_DB.cs" />

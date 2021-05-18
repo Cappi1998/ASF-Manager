@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using ASF_Manager.Models;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -54,14 +55,11 @@ namespace ASF_Manager
             lbl_status_auth.Text = "please wait...";
             lbl_status_auth.ForeColor = Color.Orange;
 
-
             var response = new RequestBuilder(URL)
                 .GET()
                 .Execute();
 
-
-
-            Main_ASD_Response result = JsonConvert.DeserializeObject<Main_ASD_Response>(response);
+            ASFResponse_MainConfig.Root result = JsonConvert.DeserializeObject<ASFResponse_MainConfig.Root>(response);
 
             try
             {
@@ -71,7 +69,7 @@ namespace ASF_Manager
                     lbl_status_auth.ForeColor = Color.LimeGreen;
                 }
 
-                lbl_status_auth.Text = "Success, ASF Version -> " + result.Result.Version.ToString();
+                lbl_status_auth.Text = $"Success, ASF Version -> {result.Result.Version}";
                 lbl_status_auth.ForeColor = Color.LimeGreen;
                 groupbox_função.Visible = true;
             }
@@ -80,8 +78,6 @@ namespace ASF_Manager
                 lbl_status_auth.Text = "Connection Fail";
                 lbl_status_auth.ForeColor = Color.DarkRed;
             }
-
-
         }
 
         private void metroCheckBox1_CheckedChanged(object sender, EventArgs e)
@@ -108,22 +104,22 @@ namespace ASF_Manager
 
         private void btn_ASF_Restart_Click(object sender, EventArgs e)
         {
-
-
             string URL = "http://" + txt_IPC.Text + ":" + txt_PORT.Text + "/Api/ASF/Restart";
 
             var response = new RequestBuilder(URL)
                 .POST()
                 .Execute();
 
-            Json_serealize.ASF_Restart_Response result = JsonConvert.DeserializeObject<Json_serealize.ASF_Restart_Response>(response);
+            ASFResponse_BotsResume.Root result = JsonConvert.DeserializeObject<ASFResponse_BotsResume.Root>(response);
 
             if (!result.Success == true)
             {
                 Log.error("ASF Restart Fail!", result);
             }
-
-            Log.info("ASF successfully restarted!");
+            else
+            {
+                Log.info("ASF successfully restarted!");
+            }
         }
 
         private void btn_bot_Click(object sender, EventArgs e)
@@ -148,25 +144,17 @@ namespace ASF_Manager
 
         private void btn_wallet_Click(object sender, EventArgs e)
         {
-            var URL = "http://" + txt_IPC.Text + ":" + txt_PORT.Text + "/Api/Bot/asf";
+            var URL = $"http://{Main._Main.txt_IPC.Text}:{Main._Main.txt_PORT.Text}/Api/Bot/asf";
 
             var response = new RequestBuilder(URL)
                 .GET()
                 .Execute();
 
-            JObject o = JObject.Parse(response);
+            ASFResponse_BotsResume.Root asf_response = JsonConvert.DeserializeObject<ASFResponse_BotsResume.Root>(response);
 
-
-            var id = o.First.First.ToString();
-
-            JObject o1 = JObject.Parse(id);
-            foreach (var test in o1)
+            foreach (var asf_bot in asf_response.Result)
             {
-                JObject odad = JObject.Parse(test.Value.ToString());
-
-                ASF_Bots_Response bot_response = JsonConvert.DeserializeObject<ASF_Bots_Response>(odad.ToString());
-
-                Log.info(bot_response.BotName + ": " + bot_response.WalletBalance.ToString("C"));
+                Log.info($"{asf_bot.Value.BotName} => {asf_bot.Value.WalletBalance}");
             }
 
             Log.pink("Attention: this function is still not converting correctly to the account currency");
@@ -178,26 +166,24 @@ namespace ASF_Manager
             Main._Main.groupbox_função.Invoke(new Action(() => Main._Main.groupbox_função.Enabled = false));
 
 
-            string[] array1 = Directory.GetFiles(@"active", "*.txt");//pegamos informações da pasta
+            string[] gamesFiles = Directory.GetFiles(@"active", "*.txt");//pegamos informações da pasta
 
-            string[] array2 = Directory.GetFiles(@"bots", "*.json");//pegamos informações da pasta
+            string[] botinfoFiles = Directory.GetFiles(@"bots", "*.json");//pegamos informações da pasta
 
-            List<Json_serealize.Bot> Bots = new List<Json_serealize.Bot> { };
+            List<BotInfo> Bots = new List<BotInfo> { };
 
-            foreach (var bot in array2)
+            foreach (var bot in botinfoFiles)
             {
-                Json_serealize.Bot bot1 = JsonConvert.DeserializeObject<Json_serealize.Bot>(File.ReadAllText(@bot));
+                BotInfo bot1 = JsonConvert.DeserializeObject<BotInfo>(File.ReadAllText(@bot));
 
                 if (bot1.vds == Main._Main.txt_IPC.Text + ":" + Main._Main.txt_PORT.Text)
                 {
                     Bots.Add(bot1);
                 }
-
-
             }
 
             int process = 0;
-            foreach (var game in array1)
+            foreach (var game in gamesFiles)
             {
                 int max_process = Convert.ToInt32(Main._Main.txt_max_process.Text);
 
@@ -229,30 +215,11 @@ namespace ASF_Manager
 
                 foreach (var bot in Bots)
                 {
-
-                    bool ja_tem = false;
-                    foreach (var appid in bot.gamesHave)
+                    if (!bot.GamesHave.Contains(ID_GAME))//se não tiver o jogo fazer a ativação
                     {
-
-                        if (appid.appid == Convert.ToInt32(ID_GAME))
-                        {
-                            ja_tem = true;
-                        }
-
-                        if (ja_tem == true)
-                            break;
-                    }
-
-                    if (!ja_tem == true)//se não tiver o jogo fazer a ativação
-                    {
-                        //Log.blue("Active appid " + ID_GAME + " In Account " + bot.BotName);
-
-
                         string[] Ler_Arquivo = File.ReadAllLines(game);
                         if (Ler_Arquivo.Length == 0)
                         {
-                            //Log.orange("AppID: " + ID_GAME + " Will not be used because it has 0 codes!");
-                            //Log.error("Deleting file " + game);
                             File.Delete(game);
                             break;
                         }
@@ -260,14 +227,9 @@ namespace ASF_Manager
                         var arquivo = File.ReadAllLines(game);
                         File.WriteAllLines(game, arquivo.Skip(1).ToArray());
 
-                        Post_Command_Active_Game(bot.BotName, bot.steamID, Codigo, Convert.ToInt32(ID_GAME));
-
+                        Post_Command_Active_Game(bot.BotName, bot.SteamID, Codigo, ID_GAME);
                     }
-
-
                 }
-
-
             }
 
             Main._Main.group_auth.Invoke(new Action(() => Main._Main.group_auth.Enabled = true));
@@ -275,12 +237,11 @@ namespace ASF_Manager
 
         }
 
-        public static void Post_Command_Active_Game(string BotName, long SteamID64, string codigo_game, int appid)
+        public static void Post_Command_Active_Game(string BotName, long SteamID64, string codigo_game, string AppID)
         {
             string URL = "http://127.118.119.122:1719/Api/Command";
 
-
-            exec_comando comando = new exec_comando { Command = "redeem " + BotName + " " + codigo_game };
+            Exec_Command comando = new Exec_Command { Command = "redeem " + BotName + " " + codigo_game };
 
             string json = JsonConvert.SerializeObject(comando);
 
@@ -314,7 +275,7 @@ namespace ASF_Manager
             }
             else
             {
-                Update_Bots_DB.Add_active_Game_to_File(SteamID64, appid);
+                Update_Bots_DB.Add_active_Game_to_File(SteamID64, AppID);
                 Log.info(BotName + " - " + codigo_game + " - OK");
             }
 

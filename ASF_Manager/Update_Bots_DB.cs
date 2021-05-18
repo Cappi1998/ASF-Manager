@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using ASF_Manager.Models;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ namespace ASF_Manager
             Main._Main.groupbox_função.Invoke(new Action(() => Main._Main.groupbox_função.Enabled = false));
 
 
-            var URL = "http://" + Main._Main.txt_IPC.Text + ":" + Main._Main.txt_PORT.Text + "/Api/Bot/asf";
+            var URL = $"http://{Main._Main.txt_IPC.Text}:{Main._Main.txt_PORT.Text}/Api/Bot/asf";
 
             if (Main._Main.ckc_usepass.Checked)
             {
@@ -42,32 +43,23 @@ namespace ASF_Manager
                 .GET()
                 .Execute();
 
-            JObject o = JObject.Parse(response);
 
-
-            var id = o.First.First.ToString();
-
-            JObject o1 = JObject.Parse(id);
-
+            ASFResponse_BotsResume.Root asf_response = JsonConvert.DeserializeObject<ASFResponse_BotsResume.Root>(response);
 
             Log.orange("Starting Update Bots Database...");
             int counter = 0;
-            foreach (var test in o1)
+            foreach (var asf_Bot in asf_response.Result)
             {
-                JObject odad = JObject.Parse(test.Value.ToString());
+                
+                Log.info("Db Update.. {0}. {1}/{2}", asf_Bot.Value.BotName, ++counter, asf_response.Result.Count);
 
-                ASF_Bots_Response bot_response = JsonConvert.DeserializeObject<ASF_Bots_Response>(odad.ToString());
-
-
-                Log.info("Db Update.. {0}. {1}/{2}", bot_response.BotName, ++counter, o1.Count);
-
-                if (bot_response.BotConfig.Enabled == false)
+                if (asf_Bot.Value.BotConfig.Enabled == false)
                 {
-                    Log.orange($"Account: {bot_response.BotName} - was set to disabled, on the ASF config!");
+                    Log.orange($"Account: {asf_Bot.Value.BotName} - was set to disabled, on the ASF config!");
 
                     try
                     {
-                        File.Delete(@"Bots/" + bot_response.SteamID + ".json");
+                        File.Delete(@"Bots/" + asf_Bot.Value.SteamID + ".json");
                     }
                     catch
                     {
@@ -77,60 +69,53 @@ namespace ASF_Manager
                     continue;
                 }
                 
-                if(bot_response.SteamID == 0)
+                if(asf_Bot.Value.SteamID == 0)
                 {
-                    Log.orange($"Account: {bot_response.BotName} - not yet started!");
+                    Log.orange($"Account: {asf_Bot.Value.BotName} - not yet started!");
                     continue;
                 }
 
-                string gameresponse_api = $"http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={Main._Main.txt_steamAPI.Text}&steamid={bot_response.SteamID}&format=json";
+                string RequestURL = $"http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={Main._Main.txt_steamAPI.Text}&steamid={asf_Bot.Value.SteamID}&format=json";
 
-                var games_response = new RequestBuilder(gameresponse_api)
+                var Request = new RequestBuilder(RequestURL)
                 .GET()
                 .Execute();
 
-                if (games_response == "{ \"response\":{ } }")
+                if (Request == "{ \"response\":{ } }")
                 {
-                    Log.error($"Account: {bot_response.BotName} - games list is private please change to public!");
+                    Log.error($"Account: {asf_Bot.Value.BotName} - games list is private please change to public!");
                 }
+                
+                OwnedGames.Root OwnedGamesResponse = JsonConvert.DeserializeObject<OwnedGames.Root>(Request);
 
+                var GameList = OwnedGamesResponse.response.games.Select(i => i.appid.ToString()).ToList();
 
-                JObject od = JObject.Parse(games_response); //obter all appids
-                JArray a = (JArray)od["response"]["games"];
-                List<Json_serealize.Getappid> AppidList_UserNoEnumerated = a.ToObject<List<Json_serealize.Getappid>>();
-
-
-
-                Json_serealize.Bot bot = new Json_serealize.Bot
+                BotInfo bot = new BotInfo
                 {
-                    AvatarHash = bot_response.AvatarHash,
-                    steamID = bot_response.SteamID,
-                    BotName = bot_response.BotName,
-                    NickName = bot_response.Nickname,
-                    WalletBalance = bot_response.WalletBalance,
-                    vds = Main._Main.txt_IPC.Text + ":" + Main._Main.txt_PORT.Text,
+                    AvatarHash = asf_Bot.Value.AvatarHash,
+                    SteamID = asf_Bot.Value.SteamID,
+                    BotName = asf_Bot.Value.BotName,
+                    NickName = asf_Bot.Value.Nickname,
+                    WalletBalance = asf_Bot.Value.WalletBalance,
+                    vds = $"{Main._Main.txt_IPC.Text}:{Main._Main.txt_PORT.Text}",
                     Active = true,
-                    gamesHave = AppidList_UserNoEnumerated
-
+                    GamesHave = GameList
                 };
 
-                File.WriteAllText(@"Bots/" + bot.steamID.ToString() + ".json", JsonConvert.SerializeObject(bot, Formatting.Indented));
+                File.WriteAllText($@"Bots/{bot.SteamID}.json", JsonConvert.SerializeObject(bot, Formatting.Indented));
             }
 
             Main._Main.group_auth.Invoke(new Action(() => Main._Main.group_auth.Enabled = true));
             Main._Main.groupbox_função.Invoke(new Action(() => Main._Main.groupbox_função.Enabled = true));
-
         }
 
-        public static void Add_active_Game_to_File(long SteamID64, int Game_Code)
+        public static void Add_active_Game_to_File(long SteamID64, string AppID)
         {
             string diretory = @"Bots/" + SteamID64 + ".json";
 
-            Json_serealize.Bot bot = JsonConvert.DeserializeObject<Json_serealize.Bot>(File.ReadAllText(diretory));
+            BotInfo bot = JsonConvert.DeserializeObject<BotInfo>(File.ReadAllText(diretory));
 
-            Json_serealize.Getappid game_activate = new Json_serealize.Getappid { appid=Game_Code};
-
-            bot.gamesHave.Add(game_activate);
+            bot.GamesHave.Add(AppID);
 
             File.WriteAllText(@"Bots/" + SteamID64 + ".json", JsonConvert.SerializeObject(bot, Formatting.Indented));
         }
