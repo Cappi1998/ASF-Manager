@@ -63,7 +63,7 @@ namespace ASF_Manager
 
                 if (bot_response.BotConfig.Enabled == false)
                 {
-                    Log.orange("Account " + bot_response.BotName + " was set to disabled, on the ASF config!");
+                    Log.orange($"Account: {bot_response.BotName} - was set to disabled, on the ASF config!");
 
                     try
                     {
@@ -79,11 +79,11 @@ namespace ASF_Manager
                 
                 if(bot_response.SteamID == 0)
                 {
-                    Log.orange("Account " + bot_response.BotName + " not yet started!");
+                    Log.orange($"Account: {bot_response.BotName} - not yet started!");
                     continue;
                 }
 
-                string gameresponse_api = "http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=" + Main._Main.txt_steamAPI.Text + "&steamid=" + bot_response.SteamID + "&format=json";
+                string gameresponse_api = $"http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={Main._Main.txt_steamAPI.Text}&steamid={bot_response.SteamID}&format=json";
 
                 var games_response = new RequestBuilder(gameresponse_api)
                 .GET()
@@ -91,7 +91,7 @@ namespace ASF_Manager
 
                 if (games_response == "{ \"response\":{ } }")
                 {
-                    Log.error("Account: +" + bot_response.BotName + " - games list is private please change to public!");
+                    Log.error($"Account: {bot_response.BotName} - games list is private please change to public!");
                 }
 
 
