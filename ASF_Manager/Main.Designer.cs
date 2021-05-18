@@ -169,8 +169,7 @@
             this.txt_steamAPI.CustomButton.UseSelectable = true;
             this.txt_steamAPI.CustomButton.Visible = false;
             this.txt_steamAPI.ForeColor = System.Drawing.Color.Lime;
-            this.txt_steamAPI.Lines = new string[] {
-        "SteamAPIKey"};
+            this.txt_steamAPI.Lines = new string[0];
             this.txt_steamAPI.Location = new System.Drawing.Point(522, 30);
             this.txt_steamAPI.MaxLength = 32767;
             this.txt_steamAPI.Name = "txt_steamAPI";
@@ -182,7 +181,6 @@
             this.txt_steamAPI.ShortcutsEnabled = true;
             this.txt_steamAPI.Size = new System.Drawing.Size(236, 23);
             this.txt_steamAPI.TabIndex = 16;
-            this.txt_steamAPI.Text = "SteamAPIKey";
             this.txt_steamAPI.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.txt_steamAPI.UseCustomForeColor = true;
             this.txt_steamAPI.UseSelectable = true;

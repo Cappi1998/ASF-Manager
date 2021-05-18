@@ -324,8 +324,15 @@ namespace ASF_Manager
 
         private void btn_bots_update_Click(object sender, EventArgs e)
         {
-            Thread th = new Thread(() => Update_Bots_DB.Update_Bots());
-            th.Start();
+            if (string.IsNullOrWhiteSpace(txt_steamAPI.Text))
+            {
+                MessageBox.Show("Error - Steam API Key is Null! Enter valid  Steam API key", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else
+            {
+                Thread th = new Thread(() => Update_Bots_DB.Update_Bots());
+                th.Start();
+            }
         }
 
         private void btn_open_web_Click(object sender, EventArgs e)
