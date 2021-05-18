@@ -80,8 +80,8 @@ namespace ASF_Manager
                 lbl_status_auth.Text = "Connection Fail";
                 lbl_status_auth.ForeColor = Color.DarkRed;
             }
-            
-            
+
+
         }
 
         private void metroCheckBox1_CheckedChanged(object sender, EventArgs e)
@@ -128,7 +128,7 @@ namespace ASF_Manager
 
         private void btn_bot_Click(object sender, EventArgs e)
         {
-         
+
             Thread active_games = new Thread(() => Activate_Games());
             active_games.Start();
 
@@ -184,16 +184,16 @@ namespace ASF_Manager
 
             List<Json_serealize.Bot> Bots = new List<Json_serealize.Bot> { };
 
-            foreach(var bot in array2)
+            foreach (var bot in array2)
             {
                 Json_serealize.Bot bot1 = JsonConvert.DeserializeObject<Json_serealize.Bot>(File.ReadAllText(@bot));
 
-                if(bot1.vds == Main._Main.txt_IPC.Text + ":" + Main._Main.txt_PORT.Text)
+                if (bot1.vds == Main._Main.txt_IPC.Text + ":" + Main._Main.txt_PORT.Text)
                 {
                     Bots.Add(bot1);
                 }
 
-                
+
             }
 
             int process = 0;
@@ -231,7 +231,7 @@ namespace ASF_Manager
                 {
 
                     bool ja_tem = false;
-                    foreach(var appid in bot.gamesHave)
+                    foreach (var appid in bot.gamesHave)
                     {
 
                         if (appid.appid == Convert.ToInt32(ID_GAME))
@@ -249,7 +249,7 @@ namespace ASF_Manager
 
 
                         string[] Ler_Arquivo = File.ReadAllLines(game);
-                        if(Ler_Arquivo.Length == 0)
+                        if (Ler_Arquivo.Length == 0)
                         {
                             //Log.orange("AppID: " + ID_GAME + " Will not be used because it has 0 codes!");
                             //Log.error("Deleting file " + game);
@@ -264,7 +264,7 @@ namespace ASF_Manager
 
                     }
 
-                    
+
                 }
 
 
@@ -275,27 +275,9 @@ namespace ASF_Manager
 
         }
 
-        public static void Post_Command_Active_Game(string BotName, long SteamID64 ,string codigo_game, int appid)
+        public static void Post_Command_Active_Game(string BotName, long SteamID64, string codigo_game, int appid)
         {
-            string URL = "http://" + Main._Main.txt_IPC.Text + ":" + Main._Main.txt_PORT.Text + "/Api/Command";
-
-
-            if (Main._Main.ckc_usepass.Checked)
-            {
-                if (Main._Main.txt_passIPC.Text == "")
-                {
-
-                    Main._Main.lbl_status_auth.Text = "Please enter the IPC password";
-                    Main._Main.lbl_status_auth.ForeColor = Color.Red;
-                    Main._Main.txt_passIPC.Focus();
-                    return;
-                }
-                else
-                {
-                    URL = "http://" + Main._Main.txt_IPC.Text + ":" + Main._Main.txt_PORT.Text + "/Api/Command?password=" + Main._Main.txt_passIPC.Text;
-                }
-
-            }
+            string URL = "http://127.118.119.122:1719/Api/Command";
 
 
             exec_comando comando = new exec_comando { Command = "redeem " + BotName + " " + codigo_game };
@@ -307,7 +289,7 @@ namespace ASF_Manager
             http.ContentType = "application/json";
             http.Method = "POST";
 
-            
+
             ASCIIEncoding encoding = new ASCIIEncoding();
             Byte[] bytes = encoding.GetBytes(json);
 
@@ -323,19 +305,19 @@ namespace ASF_Manager
 
             bool sucesso = content.Contains("OK/NoDetail");
 
-            
-            if(sucesso == false)
+
+            if (sucesso == false)
             {
                 Log.blue(content);
                 File.AppendAllText("activation_fail.txt", content + "\n");
-                
+
             }
             else
             {
                 Update_Bots_DB.Add_active_Game_to_File(SteamID64, appid);
                 Log.info(BotName + " - " + codigo_game + " - OK");
             }
-            
+
             File.AppendAllText("response.txt", content + "\n");
         }
 
@@ -348,7 +330,7 @@ namespace ASF_Manager
 
         private void btn_open_web_Click(object sender, EventArgs e)
         {
-            
+
             System.Diagnostics.Process.Start("http://" + txt_IPC.Text + ":" + txt_PORT.Text);
 
         }
@@ -356,7 +338,6 @@ namespace ASF_Manager
         private void btn_active_paste_open_Click(object sender, EventArgs e)
         {
             Process.Start(@"active");
-
         }
 
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
@@ -378,6 +359,6 @@ namespace ASF_Manager
         }
     }
 
-    
+
 
 }
