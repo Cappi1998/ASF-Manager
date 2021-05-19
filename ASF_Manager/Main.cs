@@ -239,7 +239,7 @@ namespace ASF_Manager
 
         public static void Post_Command_Active_Game(string BotName, long SteamID64, string codigo_game, string AppID)
         {
-            string URL = "http://127.118.119.122:1719/Api/Command";
+            string URL = $"http://{Main._Main.txt_IPC.Text}:{Main._Main.txt_PORT.Text}/Api/Command";
 
             Exec_Command comando = new Exec_Command { Command = "redeem " + BotName + " " + codigo_game };
 
