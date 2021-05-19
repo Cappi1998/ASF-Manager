@@ -33,7 +33,7 @@ namespace ASF_Manager
         private void btn_check_connect_Click(object sender, EventArgs e)
         {
             lbl_status_auth.Text = "";
-            string URL = "http://" + txt_IPC.Text + ":" + txt_PORT.Text + "/Api/ASF";
+            string URL = $"http://{Main._Main.txt_IPC.Text}:{Main._Main.txt_PORT.Text}/Api/ASF";
 
             if (ckc_usepass.Checked)
             {
@@ -47,7 +47,7 @@ namespace ASF_Manager
                 }
                 else
                 {
-                    URL = "http://" + txt_IPC.Text + ":" + txt_PORT.Text + "/Api/ASF?password=" + txt_passIPC.Text;
+                    URL = $"http://{Main._Main.txt_IPC.Text}:{Main._Main.txt_PORT.Text}/Api/ASF?password=" + txt_passIPC.Text;
                 }
 
             }
