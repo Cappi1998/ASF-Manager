@@ -276,7 +276,7 @@ namespace ASF_Manager
             else
             {
                 Update_Bots_DB.Add_active_Game_to_File(SteamID64, AppID);
-                Log.info(BotName + " - " + codigo_game + " - OK");
+                Log.info($"{BotName} - {codigo_game} - OK");
             }
 
             File.AppendAllText("response.txt", content + "\n");
@@ -326,7 +326,5 @@ namespace ASF_Manager
             }
         }
     }
-
-
 
 }
