@@ -18,6 +18,5 @@ Application communicates directly with [ArchiSteamFarm](https://github.com/JustA
 
 this project is still under development, some observations:
 
-- IPC Authentication using password not tested yet.
 - Check Wallet function is not yet completed.
 - I don't have much programming knowledge, I know that my code is poorly optimized, feel free to make improvements to the code!
