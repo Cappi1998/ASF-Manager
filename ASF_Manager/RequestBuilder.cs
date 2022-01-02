@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-
 using RestSharp;
-
 
 
 namespace ASF_Manager
 {
-
-
     class RequestBuilder
     {
         private RestRequest request;
@@ -72,10 +68,10 @@ namespace ASF_Manager
             return this;
         }
 
-        public string Execute()
+        public IRestResponse Execute()
         {
             var response = this.restClient.Execute(this.request);
-            return response.Content;
+            return response;
         }
 
         public RequestBuilder GET(bool defaultHeaders = true)

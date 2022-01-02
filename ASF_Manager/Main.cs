@@ -59,7 +59,7 @@ namespace ASF_Manager
                 .GET()
                 .Execute();
 
-            ASFResponse_MainConfig.Root result = JsonConvert.DeserializeObject<ASFResponse_MainConfig.Root>(response);
+            ASFResponse_MainConfig.Root result = JsonConvert.DeserializeObject<ASFResponse_MainConfig.Root>(response.Content);
 
             try
             {
@@ -110,7 +110,7 @@ namespace ASF_Manager
                 .POST()
                 .Execute();
 
-            ASFResponse_BotsResume.Root result = JsonConvert.DeserializeObject<ASFResponse_BotsResume.Root>(response);
+            ASFResponse_BotsResume.Root result = JsonConvert.DeserializeObject<ASFResponse_BotsResume.Root>(response.Content);
 
             if (!result.Success == true)
             {
@@ -150,7 +150,7 @@ namespace ASF_Manager
                 .GET()
                 .Execute();
 
-            ASFResponse_BotsResume.Root asf_response = JsonConvert.DeserializeObject<ASFResponse_BotsResume.Root>(response);
+            ASFResponse_BotsResume.Root asf_response = JsonConvert.DeserializeObject<ASFResponse_BotsResume.Root>(response.Content);
 
             foreach (var asf_bot in asf_response.Result)
             {
@@ -249,6 +249,8 @@ namespace ASF_Manager
             http.Accept = "application/json";
             http.ContentType = "application/json";
             http.Method = "POST";
+            http.PreAuthenticate = true;
+            http.Headers.Add("Authentication", Main._Main.txt_passIPC.Text);
 
 
             ASCIIEncoding encoding = new ASCIIEncoding();

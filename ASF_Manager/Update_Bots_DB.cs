@@ -1,13 +1,8 @@
 ﻿using ASF_Manager.Models;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ASF_Manager
 {
@@ -44,7 +39,7 @@ namespace ASF_Manager
                 .Execute();
 
 
-            ASFResponse_BotsResume.Root asf_response = JsonConvert.DeserializeObject<ASFResponse_BotsResume.Root>(response);
+            ASFResponse_BotsResume.Root asf_response = JsonConvert.DeserializeObject<ASFResponse_BotsResume.Root>(response.Content);
 
             Log.orange("Starting Update Bots Database...");
             int counter = 0;
@@ -75,20 +70,7 @@ namespace ASF_Manager
                     continue;
                 }
 
-                string RequestURL = $"http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={Main._Main.txt_steamAPI.Text}&steamid={asf_Bot.Value.SteamID}&format=json";
-
-                var Request = new RequestBuilder(RequestURL)
-                .GET()
-                .Execute();
-
-                if (Request == "{ \"response\":{ } }")
-                {
-                    Log.error($"Account: {asf_Bot.Value.BotName} - games list is private please change to public!");
-                }
-                
-                OwnedGames.Root OwnedGamesResponse = JsonConvert.DeserializeObject<OwnedGames.Root>(Request);
-
-                var GameList = OwnedGamesResponse.response.games.Select(i => i.appid.ToString()).ToList();
+                var GameList = GetOwnedGames.GetGames(asf_Bot.Value.SteamID.ToString());
 
                 BotInfo bot = new BotInfo
                 {
