@@ -327,6 +327,61 @@ namespace ASF_Manager
                 System.IO.Directory.CreateDirectory(@"Active");
             }
         }
+
+        private void metroButton1_Click(object sender, EventArgs e)
+        {
+            var URL = $"http://{Main._Main.txt_IPC.Text}:{Main._Main.txt_PORT.Text}/Api/Bot/asf";
+
+            if (Main._Main.ckc_usepass.Checked)
+            {
+                if (Main._Main.txt_passIPC.Text == "")
+                {
+
+                    Main._Main.lbl_status_auth.Text = "Please enter the IPC password";
+                    Main._Main.lbl_status_auth.ForeColor = Color.Red;
+                    Main._Main.txt_passIPC.Focus();
+                    return;
+                }
+                else
+                {
+                    URL = "http://" + Main._Main.txt_IPC.Text + ":" + Main._Main.txt_PORT.Text + "/Api/Bot/asf?password=" + Main._Main.txt_passIPC.Text;
+                }
+
+            }
+
+            var response = new RequestBuilder(URL)
+                .GET()
+                .Execute();
+
+
+            ASFResponse_BotsResume.Root asf_response = JsonConvert.DeserializeObject<ASFResponse_BotsResume.Root>(response.Content);
+
+            foreach(var bot in asf_response.Result)
+            {
+
+                var Absconding = bot.Value.CardsFarmer.GamesToFarm.Where(a=>a.GameName.Contains("Absconding")).FirstOrDefault();
+                var GooCubelets = bot.Value.CardsFarmer.GamesToFarm.Where(a => a.GameName.Contains("GooCubelets")).FirstOrDefault();
+                var Why_So_Evil = bot.Value.CardsFarmer.GamesToFarm.Where(a => a.GameName.Contains("Why So Evil")).FirstOrDefault();
+
+
+                if(Absconding != null)
+                {
+                    Update_Bots_DB.Add_active_Game_to_File(bot.Value.SteamID, "Absconding");
+                }
+
+                if(GooCubelets != null)
+                {
+                    Update_Bots_DB.Add_active_Game_to_File(bot.Value.SteamID, "GooCubelets");
+                }
+
+                if (Why_So_Evil != null)
+                {
+                    Update_Bots_DB.Add_active_Game_to_File(bot.Value.SteamID, "Why_So_Evil");
+                }
+            }
+
+            MessageBox.Show("done", "done");
+        }
     }
 
 }

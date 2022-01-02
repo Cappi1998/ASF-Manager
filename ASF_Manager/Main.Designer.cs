@@ -52,6 +52,7 @@
             this.metroLabel4 = new MetroFramework.Controls.MetroLabel();
             this.btn_bots_update = new MetroFramework.Controls.MetroButton();
             this.btn_wallet = new MetroFramework.Controls.MetroButton();
+            this.metroButton1 = new MetroFramework.Controls.MetroButton();
             this.group_auth.SuspendLayout();
             this.groupbox_função.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -345,6 +346,7 @@
             // 
             // groupbox_função
             // 
+            this.groupbox_função.Controls.Add(this.metroButton1);
             this.groupbox_função.Controls.Add(this.btn_open_web);
             this.groupbox_função.Controls.Add(this.groupBox2);
             this.groupbox_função.Controls.Add(this.btn_bots_update);
@@ -475,6 +477,17 @@
             this.btn_wallet.UseSelectable = true;
             this.btn_wallet.Click += new System.EventHandler(this.btn_wallet_Click);
             // 
+            // metroButton1
+            // 
+            this.metroButton1.Location = new System.Drawing.Point(379, 314);
+            this.metroButton1.Name = "metroButton1";
+            this.metroButton1.Size = new System.Drawing.Size(95, 33);
+            this.metroButton1.TabIndex = 18;
+            this.metroButton1.Text = "test";
+            this.metroButton1.Theme = MetroFramework.MetroThemeStyle.Dark;
+            this.metroButton1.UseSelectable = true;
+            this.metroButton1.Click += new System.EventHandler(this.metroButton1_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -531,6 +544,7 @@
         public MetroFramework.Controls.MetroTextBox txt_max_process;
         public MetroFramework.Controls.MetroLabel metroLabel6;
         public System.Windows.Forms.GroupBox groupbox_função;
+        private MetroFramework.Controls.MetroButton metroButton1;
     }
 }
 
