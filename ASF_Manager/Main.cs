@@ -258,7 +258,7 @@ namespace ASF_Manager
                         
                         string result = Post_Command_Active_Game(bot.BotName, bot.SteamID, Codigo, ID_GAME);
 
-                        if(result != "Timeout" && result != "AlreadyPurchased")
+                        if(result != "Timeout" && result != "AlreadyPurchased" && result != "RateLimited")
                         {
                             File.WriteAllLines(game, arquivo.Skip(1).ToArray());
                         }
@@ -363,6 +363,11 @@ namespace ASF_Manager
                 Log.orange(content);
                 Log.pink($"The code will not be discarded, it will be used in the next bot!");
                 return "AlreadyPurchased";
+            }else if (content.Contains("Fail/RateLimited"))
+            {
+                Log.orange(content);
+                Log.pink($"The code will not be discarded, it will be used in the next bot!");
+                return "RateLimited";
             }
             else
             {
