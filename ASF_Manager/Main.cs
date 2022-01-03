@@ -359,6 +359,7 @@ namespace ASF_Manager
             }
             else if (content.Contains("Fail/AlreadyPurchased"))
             {
+                Update_Bots_DB.Add_active_Game_to_File(SteamID64, AppID);
                 Log.orange(content);
                 Log.pink($"The code will not be discarded, it will be used in the next bot!");
                 return "AlreadyPurchased";
