@@ -217,6 +217,14 @@ namespace ASF_Manager
                 {
                     if (!bot.GamesHave.Contains(ID_GAME))//se não tiver o jogo fazer a ativação
                     {
+                        bool botIsOnline = CheckBotIsLogeed(bot.BotName);
+
+                        if(botIsOnline == false)
+                        {
+                            Log.orange($"{bot.BotName} - is Offline");
+                            continue;
+                        }
+
                         string[] Ler_Arquivo = File.ReadAllLines(game);
                         if (Ler_Arquivo.Length == 0)
                         {
@@ -225,19 +233,60 @@ namespace ASF_Manager
                         }
                         string Codigo = Ler_Arquivo[0];
                         var arquivo = File.ReadAllLines(game);
-                        File.WriteAllLines(game, arquivo.Skip(1).ToArray());
+                        
+                        string result = Post_Command_Active_Game(bot.BotName, bot.SteamID, Codigo, ID_GAME);
 
-                        Post_Command_Active_Game(bot.BotName, bot.SteamID, Codigo, ID_GAME);
+                        if(result != "Timeout")
+                        {
+                            File.WriteAllLines(game, arquivo.Skip(1).ToArray());
+                        }
+
+
+                       Thread.Sleep(500);
                     }
                 }
             }
 
             Main._Main.group_auth.Invoke(new Action(() => Main._Main.group_auth.Enabled = true));
             Main._Main.groupbox_função.Invoke(new Action(() => Main._Main.groupbox_função.Enabled = true));
+        }
+
+
+        public static bool CheckBotIsLogeed(string BotName)
+        {
+            var URL = $"http://{Main._Main.txt_IPC.Text}:{Main._Main.txt_PORT.Text}/Api/Bot/{BotName}";
+
+            if (Main._Main.ckc_usepass.Checked)
+            {
+                if (Main._Main.txt_passIPC.Text == "")
+                {
+                    Main._Main.lbl_status_auth.Text = "Please enter the IPC password";
+                    Main._Main.lbl_status_auth.ForeColor = Color.Red;
+                    Main._Main.txt_passIPC.Focus();
+                    MessageBox.Show("Please enter the IPC password", "IPC password");
+                    return false;
+                }
+                else
+                {
+                    URL = "http://" + Main._Main.txt_IPC.Text + ":" + Main._Main.txt_PORT.Text + $"/Api/Bot/{BotName}?password=" + Main._Main.txt_passIPC.Text;
+                }
+
+            }
+
+            var response = new RequestBuilder(URL)
+                .GET()
+                .Execute();
+
+            ASFResponse_BotsResume.Root asf_response = JsonConvert.DeserializeObject<ASFResponse_BotsResume.Root>(response.Content);
+
+            var botInfo = asf_response.Result[BotName];
+
+            return botInfo.IsConnectedAndLoggedOn;
 
         }
 
-        public static void Post_Command_Active_Game(string BotName, long SteamID64, string codigo_game, string AppID)
+        //string result: Sucess, Fail, Timeout, DuplicateActivationCode
+        public static string Post_Command_Active_Game(string BotName, long SteamID64, string codigo_game, string AppID)
         {
             string URL = $"http://{Main._Main.txt_IPC.Text}:{Main._Main.txt_PORT.Text}/Api/Command";
 
@@ -266,22 +315,33 @@ namespace ASF_Manager
             var sr = new StreamReader(stream);
             var content = sr.ReadToEnd();
 
-            bool sucesso = content.Contains("OK/NoDetail");
+            File.AppendAllText("response.txt", content + "\n");
 
 
-            if (sucesso == false)
-            {
-                Log.blue(content);
-                File.AppendAllText("activation_fail.txt", content + "\n");
-
-            }
-            else
+            if (content.Contains("OK/NoDetail"))
             {
                 Update_Bots_DB.Add_active_Game_to_File(SteamID64, AppID);
                 Log.info($"{BotName} - {codigo_game} - OK");
+                return "Sucess";
+            }
+            else if (content.Contains("Timeout/Timeout"))
+            {
+                Log.orange($"{BotName} - {codigo_game} - Timeout");
+                return "Timeout";
+            }
+            else if (content.Contains("Fail/DuplicateActivationCode"))
+            {
+                Log.blue(content);
+                File.AppendAllText("activation_fail.txt", content + "\n");
+                return "DuplicateActivationCode";
+            }
+            else
+            {
+                Log.blue(content);
+                File.AppendAllText("activation_fail.txt", content + "\n");
+                return "Fail";
             }
 
-            File.AppendAllText("response.txt", content + "\n");
         }
 
 
@@ -300,9 +360,7 @@ namespace ASF_Manager
 
         private void btn_open_web_Click(object sender, EventArgs e)
         {
-
             System.Diagnostics.Process.Start("http://" + txt_IPC.Text + ":" + txt_PORT.Text);
-
         }
 
         private void btn_active_paste_open_Click(object sender, EventArgs e)
@@ -328,60 +386,60 @@ namespace ASF_Manager
             }
         }
 
-        private void metroButton1_Click(object sender, EventArgs e)
-        {
-            var URL = $"http://{Main._Main.txt_IPC.Text}:{Main._Main.txt_PORT.Text}/Api/Bot/asf";
+        //private void metroButton1_Click(object sender, EventArgs e)
+        //{
+        //    var URL = $"http://{Main._Main.txt_IPC.Text}:{Main._Main.txt_PORT.Text}/Api/Bot/asf";
 
-            if (Main._Main.ckc_usepass.Checked)
-            {
-                if (Main._Main.txt_passIPC.Text == "")
-                {
+        //    if (Main._Main.ckc_usepass.Checked)
+        //    {
+        //        if (Main._Main.txt_passIPC.Text == "")
+        //        {
 
-                    Main._Main.lbl_status_auth.Text = "Please enter the IPC password";
-                    Main._Main.lbl_status_auth.ForeColor = Color.Red;
-                    Main._Main.txt_passIPC.Focus();
-                    return;
-                }
-                else
-                {
-                    URL = "http://" + Main._Main.txt_IPC.Text + ":" + Main._Main.txt_PORT.Text + "/Api/Bot/asf?password=" + Main._Main.txt_passIPC.Text;
-                }
+        //            Main._Main.lbl_status_auth.Text = "Please enter the IPC password";
+        //            Main._Main.lbl_status_auth.ForeColor = Color.Red;
+        //            Main._Main.txt_passIPC.Focus();
+        //            return;
+        //        }
+        //        else
+        //        {
+        //            URL = "http://" + Main._Main.txt_IPC.Text + ":" + Main._Main.txt_PORT.Text + "/Api/Bot/asf?password=" + Main._Main.txt_passIPC.Text;
+        //        }
 
-            }
+        //    }
 
-            var response = new RequestBuilder(URL)
-                .GET()
-                .Execute();
-
-
-            ASFResponse_BotsResume.Root asf_response = JsonConvert.DeserializeObject<ASFResponse_BotsResume.Root>(response.Content);
-
-            foreach(var bot in asf_response.Result)
-            {
-
-                var Absconding = bot.Value.CardsFarmer.GamesToFarm.Where(a=>a.GameName.Contains("Absconding")).FirstOrDefault();
-                var GooCubelets = bot.Value.CardsFarmer.GamesToFarm.Where(a => a.GameName.Contains("GooCubelets")).FirstOrDefault();
-                var Why_So_Evil = bot.Value.CardsFarmer.GamesToFarm.Where(a => a.GameName.Contains("Why So Evil")).FirstOrDefault();
+        //    var response = new RequestBuilder(URL)
+        //        .GET()
+        //        .Execute();
 
 
-                if(Absconding != null)
-                {
-                    Update_Bots_DB.Add_active_Game_to_File(bot.Value.SteamID, "Absconding");
-                }
+        //    ASFResponse_BotsResume.Root asf_response = JsonConvert.DeserializeObject<ASFResponse_BotsResume.Root>(response.Content);
 
-                if(GooCubelets != null)
-                {
-                    Update_Bots_DB.Add_active_Game_to_File(bot.Value.SteamID, "GooCubelets");
-                }
+        //    foreach(var bot in asf_response.Result)
+        //    {
 
-                if (Why_So_Evil != null)
-                {
-                    Update_Bots_DB.Add_active_Game_to_File(bot.Value.SteamID, "Why_So_Evil");
-                }
-            }
+        //        var Absconding = bot.Value.CardsFarmer.GamesToFarm.Where(a=>a.GameName.Contains("Absconding")).FirstOrDefault();
+        //        var GooCubelets = bot.Value.CardsFarmer.GamesToFarm.Where(a => a.GameName.Contains("GooCubelets")).FirstOrDefault();
+        //        var Why_So_Evil = bot.Value.CardsFarmer.GamesToFarm.Where(a => a.GameName.Contains("Why So Evil")).FirstOrDefault();
 
-            MessageBox.Show("done", "done");
-        }
+
+        //        if(Absconding != null)
+        //        {
+        //            Update_Bots_DB.Add_active_Game_to_File(bot.Value.SteamID, "Absconding");
+        //        }
+
+        //        if(GooCubelets != null)
+        //        {
+        //            Update_Bots_DB.Add_active_Game_to_File(bot.Value.SteamID, "GooCubelets");
+        //        }
+
+        //        if (Why_So_Evil != null)
+        //        {
+        //            Update_Bots_DB.Add_active_Game_to_File(bot.Value.SteamID, "Why_So_Evil");
+        //        }
+        //    }
+
+        //    MessageBox.Show("done", "done");
+        //}
     }
 
 }
