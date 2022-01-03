@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GetOwnedGames.cs" />
+    <Compile Include="Models\Config.cs" />
     <Compile Include="Models\Exec_Command.cs" />
     <Compile Include="Models\ASFResponse_BotsResume.cs" />
     <Compile Include="Models\ASFResponse_MainConfig.cs" />
@@ -106,5 +107,6 @@
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>Este projeto faz referência a pacotes do NuGet que não estão presentes neste computador. Use a Restauração de Pacotes do NuGet para baixá-los.  Para obter mais informações, consulte http://go.microsoft.com/fwlink/?LinkID=322105. O arquivo ausente é {0}.</ErrorText>
-    </PropertyGroup></Target>
+    </PropertyGroup>
+  </Target>
 </Project>

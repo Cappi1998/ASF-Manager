@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows.Forms;
 
 namespace ASF_Manager
 {
     static class Program
     {
+        public static string Config_FilePath = Path.Combine(Directory.GetCurrentDirectory(), "cfg.json");
         /// <summary>
         /// Ponto de entrada Main para o aplicativo.
         /// </summary>

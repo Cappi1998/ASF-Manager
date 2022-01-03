@@ -120,6 +120,7 @@
             this.txt_IPC.WaterMarkColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
             this.txt_IPC.WaterMarkFont = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Pixel);
             this.txt_IPC.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txt_IPC_KeyPress);
+            this.txt_IPC.Leave += new System.EventHandler(this.txt_IPC_Leave);
             // 
             // metroLabel2
             // 
@@ -186,6 +187,7 @@
             this.txt_steamAPI.UseSelectable = true;
             this.txt_steamAPI.WaterMarkColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
             this.txt_steamAPI.WaterMarkFont = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Pixel);
+            this.txt_steamAPI.Leave += new System.EventHandler(this.txt_steamAPI_Leave);
             // 
             // metroLabel3
             // 
@@ -249,6 +251,7 @@
             this.txt_PORT.WaterMarkColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
             this.txt_PORT.WaterMarkFont = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Pixel);
             this.txt_PORT.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txt_PORT_KeyPress);
+            this.txt_PORT.Leave += new System.EventHandler(this.txt_PORT_Leave);
             // 
             // metroLabel5
             // 
@@ -320,6 +323,7 @@
             this.txt_passIPC.WaterMarkColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
             this.txt_passIPC.WaterMarkFont = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Pixel);
             this.txt_passIPC.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txt_passIPC_KeyPress);
+            this.txt_passIPC.Leave += new System.EventHandler(this.txt_passIPC_Leave);
             // 
             // btn_ASF_Restart
             // 

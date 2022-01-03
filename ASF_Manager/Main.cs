@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 
 
 namespace ASF_Manager
@@ -28,6 +29,27 @@ namespace ASF_Manager
             InitializeComponent();
             _Main = this;
             txtConsole.AppendText("Powered by Cappi_1998" + Environment.NewLine);
+
+            if (File.Exists(Program.Config_FilePath))
+            {
+                Config config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Program.Config_FilePath));
+                Main._Main.txt_IPC.Text = config.IP;
+                Main._Main.txt_PORT.Text = config.Port;
+                Main._Main.txt_passIPC.Text = config.Password;
+                Main._Main.txt_steamAPI.Text = config.SteamApiKey;
+            }
+            else
+            {
+                Config config = new Config {IP= "127.0.0.1", Port= "1242" };
+                File.WriteAllText(Program.Config_FilePath, JsonConvert.SerializeObject(config));
+            }
+
+        }
+
+        public static void SaveConfig()
+        {
+            Config config = new Config { IP= Main._Main.txt_IPC.Text , Port= Main._Main.txt_PORT.Text , Password= Main._Main.txt_passIPC.Text , SteamApiKey= Main._Main.txt_steamAPI.Text };
+            File.WriteAllText(Program.Config_FilePath, JsonConvert.SerializeObject(config));
         }
 
         private void btn_check_connect_Click(object sender, EventArgs e)
@@ -384,6 +406,26 @@ namespace ASF_Manager
             {
                 System.IO.Directory.CreateDirectory(@"Active");
             }
+        }
+
+        private void txt_steamAPI_Leave(object sender, EventArgs e)
+        {
+            SaveConfig();
+        }
+
+        private void txt_IPC_Leave(object sender, EventArgs e)
+        {
+            SaveConfig();
+        }
+
+        private void txt_PORT_Leave(object sender, EventArgs e)
+        {
+            SaveConfig();
+        }
+
+        private void txt_passIPC_Leave(object sender, EventArgs e)
+        {
+            SaveConfig();
         }
 
         //private void metroButton1_Click(object sender, EventArgs e)
