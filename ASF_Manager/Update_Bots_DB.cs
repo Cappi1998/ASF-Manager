@@ -1,6 +1,7 @@
 ﻿using ASF_Manager.Models;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 
@@ -13,7 +14,6 @@ namespace ASF_Manager
         {
             Main._Main.group_auth.Invoke(new Action(() => Main._Main.group_auth.Enabled = false));
             Main._Main.groupbox_função.Invoke(new Action(() => Main._Main.groupbox_função.Enabled = false));
-
 
             var URL = $"http://{Main._Main.txt_IPC.Text}:{Main._Main.txt_PORT.Text}/Api/Bot/asf";
 
@@ -29,15 +29,13 @@ namespace ASF_Manager
                 }
                 else
                 {
-                    URL = "http://" + Main._Main.txt_IPC.Text + ":" + Main._Main.txt_PORT.Text + "/Api/Bot/asf?password=" + Main._Main.txt_passIPC.Text;
+                    URL = $"{URL}?password={Main._Main.txt_passIPC.Text}";
                 }
-
             }
 
             var response = new RequestBuilder(URL)
                 .GET()
                 .Execute();
-
 
             ASFResponse_BotsResume.Root asf_response = JsonConvert.DeserializeObject<ASFResponse_BotsResume.Root>(response.Content);
 
@@ -91,13 +89,13 @@ namespace ASF_Manager
             Main._Main.groupbox_função.Invoke(new Action(() => Main._Main.groupbox_função.Enabled = true));
         }
 
-        public static void Add_active_Game_to_File(long SteamID64, string AppID)
+        public static void Add_active_Game_to_File(long SteamID64, List<int> AppIDs)
         {
             string diretory = @"Bots/" + SteamID64 + ".json";
 
             BotInfo bot = JsonConvert.DeserializeObject<BotInfo>(File.ReadAllText(diretory));
 
-            bot.GamesHave.Add(AppID);
+            bot.GamesHave.AddRange(AppIDs);
 
             File.WriteAllText(@"Bots/" + SteamID64 + ".json", JsonConvert.SerializeObject(bot, Formatting.Indented));
         }

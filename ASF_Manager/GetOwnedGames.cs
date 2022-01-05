@@ -6,7 +6,7 @@ namespace ASF_Manager
 {
     class GetOwnedGames
     {
-        public static List<string> GetGames(string SteamID64)
+        public static List<int> GetGames(string SteamID64)
         {
             string UrlRequest = "https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/";
 
@@ -41,7 +41,7 @@ namespace ASF_Manager
 
             OwnedGames.Root response = JsonConvert.DeserializeObject<OwnedGames.Root>(rest.Content);
 
-            List<string> GamesOwned = new List<string>();
+            List<int> GamesOwned = new List<int>();
 
             if (response.response.total_count == 0 && response.response.games == null)
             {
@@ -50,7 +50,7 @@ namespace ASF_Manager
 
             foreach (var game in response.response.games)
             {
-                GamesOwned.Add(game.appid.ToString());
+                GamesOwned.Add(game.appid);
             }
 
             Log.info($"<{SteamID64}> Total Games Owned Found: {GamesOwned.Count}");

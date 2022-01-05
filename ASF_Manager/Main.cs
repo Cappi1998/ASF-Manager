@@ -1,21 +1,15 @@
 ﻿using ASF_Manager.Models;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Newtonsoft.Json;
 
 
 namespace ASF_Manager
@@ -168,6 +162,22 @@ namespace ASF_Manager
         {
             var URL = $"http://{Main._Main.txt_IPC.Text}:{Main._Main.txt_PORT.Text}/Api/Bot/asf";
 
+            if (Main._Main.ckc_usepass.Checked)
+            {
+                if (Main._Main.txt_passIPC.Text == "")
+                {
+
+                    Main._Main.lbl_status_auth.Text = "Please enter the IPC password";
+                    Main._Main.lbl_status_auth.ForeColor = Color.Red;
+                    Main._Main.txt_passIPC.Focus();
+                    return;
+                }
+                else
+                {
+                    URL = $"{URL}?password={Main._Main.txt_passIPC.Text}";
+                }
+            }
+
             var response = new RequestBuilder(URL)
                 .GET()
                 .Execute();
@@ -205,7 +215,7 @@ namespace ASF_Manager
             }
 
             int process = 0;
-            foreach (var game in gamesFiles)
+            foreach (var gameFilePath in gamesFiles)
             {
                 int max_process = Convert.ToInt32(Main._Main.txt_max_process.Text);
 
@@ -215,52 +225,55 @@ namespace ASF_Manager
                     break;
                 }
 
-                Log.orange("Processing " + game);
+                Log.orange("Processing " + gameFilePath);
 
-                string ID_GAME;
-
-                var outra = game.Replace("\\", ".");
-                var split = outra.Split('.');
-                ID_GAME = split[1];
-
-                int lines = File.ReadAllLines(game).Length;
+                int lines = File.ReadAllLines(gameFilePath).Length;
 
                 if (lines < 1)
                 {
-                    //Log.orange("AppID: " + ID_GAME + " Will not be used because it has 0 codes!");
-                    //Log.error("Deleting file " + game);
-                    File.Delete(game);
+                    Log.orange($"File: {gameFilePath} Will not be used because it has 0 codes!");
                     continue;
                 }
 
                 process = process + 1;
 
-                foreach (var bot in Bots)
+                foreach (BotInfo bot in Bots)
                 {
-                    if (!bot.GamesHave.Contains(ID_GAME))//se não tiver o jogo fazer a ativação
+                    bool botIsOnline = CheckBotIsLogeed(bot.BotName);
+
+                    if (botIsOnline == false)
                     {
-                        bool botIsOnline = CheckBotIsLogeed(bot.BotName);
+                        Log.orange($"{bot.BotName} - is Offline");
+                        continue;
+                    }
 
-                        if(botIsOnline == false)
-                        {
-                            Log.orange($"{bot.BotName} - is Offline");
-                            continue;
-                        }
+                    var AppIDs = GetAppIDS(gameFilePath);
 
-                        string[] Ler_Arquivo = File.ReadAllLines(game);
-                        if (Ler_Arquivo.Length == 0)
-                        {
-                            File.Delete(game);
-                            break;
-                        }
+                    if(AppIDs == null)
+                    {
+                        break;
+                    }
+
+                    bool botNotHaveGames = CheckGameOwnsOnBot(AppIDs, bot);
+
+                    if (botNotHaveGames)//se não tiver o jogo fazer a ativação
+                    {
+                        string[] Ler_Arquivo = File.ReadAllLines(gameFilePath);
+
+                        //if (Ler_Arquivo.Length == 0)
+                        //{
+                        //    File.Delete(gameFilePath);
+                        //    break;
+                        //}
+
                         string Codigo = Ler_Arquivo[0];
-                        var arquivo = File.ReadAllLines(game);
+                        var arquivo = File.ReadAllLines(gameFilePath);
                         
-                        string result = Post_Command_Active_Game(bot.BotName, bot.SteamID, Codigo, ID_GAME);
+                        string result = Post_Command_Active_Game(bot.BotName, bot.SteamID, Codigo, AppIDs);
 
                         if(result != "Timeout" && result != "AlreadyPurchased" && result != "RateLimited")
                         {
-                            File.WriteAllLines(game, arquivo.Skip(1).ToArray());
+                            File.WriteAllLines(gameFilePath, arquivo.Skip(1).ToArray());
                         }
 
 
@@ -273,6 +286,25 @@ namespace ASF_Manager
             Main._Main.groupbox_função.Invoke(new Action(() => Main._Main.groupbox_função.Enabled = true));
         }
 
+        public static List<int> GetAppIDS(string FileName)
+        {
+            try
+            {
+                var outra = FileName.Replace("\\", ".");
+                var split = outra.Split('.');
+                string AppIDsString = split[1];
+
+                List<int> AppIDS = AppIDsString.Split('_').Select(Int32.Parse).ToList();
+
+                return AppIDS;
+            }
+            catch(Exception ex)
+            {
+                Log.error($"Error getting appid from games, file format should be AppID.txt {Environment.NewLine}If it is a Bundle the format must be AppID_AppID_AppID.txt");
+                Log.error(ex.Message);
+                return null;
+            }
+        }
 
         public static bool CheckBotIsLogeed(string BotName)
         {
@@ -308,11 +340,11 @@ namespace ASF_Manager
         }
 
         //string result: Sucess, Fail, Timeout, DuplicateActivationCode
-        public static string Post_Command_Active_Game(string BotName, long SteamID64, string codigo_game, string AppID)
+        public static string Post_Command_Active_Game(string BotName, long SteamID64, string codigo_game, List<int> AppIDs)
         {
             string URL = $"http://{Main._Main.txt_IPC.Text}:{Main._Main.txt_PORT.Text}/Api/Command";
 
-            Exec_Command comando = new Exec_Command { Command = "redeem " + BotName + " " + codigo_game };
+            Exec_Command comando = new Exec_Command { Command = $"redeem {BotName} {codigo_game}" };
 
             string json = JsonConvert.SerializeObject(comando);
 
@@ -342,7 +374,7 @@ namespace ASF_Manager
 
             if (content.Contains("OK/NoDetail"))
             {
-                Update_Bots_DB.Add_active_Game_to_File(SteamID64, AppID);
+                Update_Bots_DB.Add_active_Game_to_File(SteamID64, AppIDs);
                 Log.info($"{BotName} - {codigo_game} - OK");
                 return "Sucess";
             }
@@ -359,7 +391,7 @@ namespace ASF_Manager
             }
             else if (content.Contains("Fail/AlreadyPurchased"))
             {
-                Update_Bots_DB.Add_active_Game_to_File(SteamID64, AppID);
+                Update_Bots_DB.Add_active_Game_to_File(SteamID64, AppIDs);
                 Log.orange(content);
                 Log.pink($"The code will not be discarded, it will be used in the next bot!");
                 return "AlreadyPurchased";
@@ -378,7 +410,75 @@ namespace ASF_Manager
 
         }
 
+        public static bool CheckGameOwnsOnBot(List<int> AppIDs, BotInfo bot)
+        {
+            if(bot.GamesHave != null)
+            {
+                foreach(var appid in AppIDs)
+                {
+                    if (bot.GamesHave.Contains(appid))
+                    {
+                        return false;///ja tem algum dos jogos
+                    }
+                }
+            }
 
+            string URL = $"http://{Main._Main.txt_IPC.Text}:{Main._Main.txt_PORT.Text}/Api/Command";
+
+            string AppIDsString = string.Join(",", AppIDs.ToArray());
+            Exec_Command comando = new Exec_Command { Command = $"owns {bot.BotName} {AppIDsString}" };
+
+            string json = JsonConvert.SerializeObject(comando);
+
+            var http = (HttpWebRequest)WebRequest.Create(new Uri(URL));
+            http.Accept = "application/json";
+            http.ContentType = "application/json";
+            http.Method = "POST";
+            http.PreAuthenticate = true;
+            http.Headers.Add("Authentication", Main._Main.txt_passIPC.Text);
+
+            ASCIIEncoding encoding = new ASCIIEncoding();
+            Byte[] bytes = encoding.GetBytes(json);
+
+            Stream newStream = http.GetRequestStream();
+            newStream.Write(bytes, 0, bytes.Length);
+            newStream.Close();
+
+            var response = http.GetResponse();
+
+            var stream = response.GetResponseStream();
+            var sr = new StreamReader(stream);
+            var content = sr.ReadToEnd();
+
+            Exec_ComandResponse resp = JsonConvert.DeserializeObject<Exec_ComandResponse>(content);
+
+            if (resp.Success)
+            {
+                List<string> Results = resp.Result.Split(new[] { "\n" }, StringSplitOptions.None).ToList();
+
+                var OwnsGame = Results.Where(a=> a.Contains("Owned already") || a.Contains("Já possui")).FirstOrDefault();
+
+                if (OwnsGame == null)
+                {
+                    return true;
+                }
+                else
+                {
+                    int gameIDOwned = AppIDs.Where(a => OwnsGame.Contains(a.ToString())).FirstOrDefault();
+
+                    if(gameIDOwned != 0)
+                    {
+                        Update_Bots_DB.Add_active_Game_to_File(bot.SteamID, new List<int> { gameIDOwned });
+                    }
+
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
         private void btn_bots_update_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txt_steamAPI.Text))
@@ -391,7 +491,6 @@ namespace ASF_Manager
                 th.Start();
             }
         }
-
         private void btn_open_web_Click(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start("http://" + txt_IPC.Text + ":" + txt_PORT.Text);
@@ -440,60 +539,6 @@ namespace ASF_Manager
             SaveConfig();
         }
 
-        //private void metroButton1_Click(object sender, EventArgs e)
-        //{
-        //    var URL = $"http://{Main._Main.txt_IPC.Text}:{Main._Main.txt_PORT.Text}/Api/Bot/asf";
-
-        //    if (Main._Main.ckc_usepass.Checked)
-        //    {
-        //        if (Main._Main.txt_passIPC.Text == "")
-        //        {
-
-        //            Main._Main.lbl_status_auth.Text = "Please enter the IPC password";
-        //            Main._Main.lbl_status_auth.ForeColor = Color.Red;
-        //            Main._Main.txt_passIPC.Focus();
-        //            return;
-        //        }
-        //        else
-        //        {
-        //            URL = "http://" + Main._Main.txt_IPC.Text + ":" + Main._Main.txt_PORT.Text + "/Api/Bot/asf?password=" + Main._Main.txt_passIPC.Text;
-        //        }
-
-        //    }
-
-        //    var response = new RequestBuilder(URL)
-        //        .GET()
-        //        .Execute();
-
-
-        //    ASFResponse_BotsResume.Root asf_response = JsonConvert.DeserializeObject<ASFResponse_BotsResume.Root>(response.Content);
-
-        //    foreach(var bot in asf_response.Result)
-        //    {
-
-        //        var Absconding = bot.Value.CardsFarmer.GamesToFarm.Where(a=>a.GameName.Contains("Absconding")).FirstOrDefault();
-        //        var GooCubelets = bot.Value.CardsFarmer.GamesToFarm.Where(a => a.GameName.Contains("GooCubelets")).FirstOrDefault();
-        //        var Why_So_Evil = bot.Value.CardsFarmer.GamesToFarm.Where(a => a.GameName.Contains("Why So Evil")).FirstOrDefault();
-
-
-        //        if(Absconding != null)
-        //        {
-        //            Update_Bots_DB.Add_active_Game_to_File(bot.Value.SteamID, "Absconding");
-        //        }
-
-        //        if(GooCubelets != null)
-        //        {
-        //            Update_Bots_DB.Add_active_Game_to_File(bot.Value.SteamID, "GooCubelets");
-        //        }
-
-        //        if (Why_So_Evil != null)
-        //        {
-        //            Update_Bots_DB.Add_active_Game_to_File(bot.Value.SteamID, "Why_So_Evil");
-        //        }
-        //    }
-
-        //    MessageBox.Show("done", "done");
-        //}
     }
 
 }

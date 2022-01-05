@@ -81,6 +81,7 @@
   <ItemGroup>
     <Compile Include="GetOwnedGames.cs" />
     <Compile Include="Models\Config.cs" />
+    <Compile Include="Models\Exec_ComandResponse.cs" />
     <Compile Include="Models\Exec_Command.cs" />
     <Compile Include="Models\ASFResponse_BotsResume.cs" />
     <Compile Include="Models\ASFResponse_MainConfig.cs" />
