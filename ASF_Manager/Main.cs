@@ -225,11 +225,11 @@ namespace ASF_Manager
                     {
                         string[] Ler_Arquivo = File.ReadAllLines(gameFilePath);
 
-                        //if (Ler_Arquivo.Length == 0)
-                        //{
-                        //    File.Delete(gameFilePath);
-                        //    break;
-                        //}
+                        if (Ler_Arquivo.Length == 0)
+                        {
+                            File.Delete(gameFilePath);
+                            break;
+                        }
 
                         string Codigo = Ler_Arquivo[0];
                         var arquivo = File.ReadAllLines(gameFilePath);

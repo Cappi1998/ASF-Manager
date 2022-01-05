@@ -95,6 +95,8 @@ namespace ASF_Manager
 
             BotInfo bot = JsonConvert.DeserializeObject<BotInfo>(File.ReadAllText(diretory));
 
+            if (bot.GamesHave == null) bot.GamesHave = new List<int>();
+
             bot.GamesHave.AddRange(AppIDs);
 
             File.WriteAllText(@"Bots/" + SteamID64 + ".json", JsonConvert.SerializeObject(bot, Formatting.Indented));
