@@ -51,7 +51,6 @@
             this.btn_active_paste_open = new MetroFramework.Controls.MetroButton();
             this.metroLabel4 = new MetroFramework.Controls.MetroLabel();
             this.btn_bots_update = new MetroFramework.Controls.MetroButton();
-            this.btn_wallet = new MetroFramework.Controls.MetroButton();
             this.group_auth.SuspendLayout();
             this.groupbox_função.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -352,7 +351,6 @@
             this.groupbox_função.Controls.Add(this.btn_open_web);
             this.groupbox_função.Controls.Add(this.groupBox2);
             this.groupbox_função.Controls.Add(this.btn_bots_update);
-            this.groupbox_função.Controls.Add(this.btn_wallet);
             this.groupbox_função.Controls.Add(this.btn_ASF_Restart);
             this.groupbox_função.ForeColor = System.Drawing.Color.Lime;
             this.groupbox_função.Location = new System.Drawing.Point(23, 222);
@@ -365,7 +363,7 @@
             // 
             // btn_open_web
             // 
-            this.btn_open_web.Location = new System.Drawing.Point(266, 378);
+            this.btn_open_web.Location = new System.Drawing.Point(136, 378);
             this.btn_open_web.Name = "btn_open_web";
             this.btn_open_web.Size = new System.Drawing.Size(153, 33);
             this.btn_open_web.TabIndex = 17;
@@ -436,7 +434,7 @@
             // 
             // btn_active_paste_open
             // 
-            this.btn_active_paste_open.Location = new System.Drawing.Point(427, 141);
+            this.btn_active_paste_open.Location = new System.Drawing.Point(424, 141);
             this.btn_active_paste_open.Name = "btn_active_paste_open";
             this.btn_active_paste_open.Size = new System.Drawing.Size(95, 33);
             this.btn_active_paste_open.TabIndex = 17;
@@ -467,17 +465,6 @@
             this.btn_bots_update.Theme = MetroFramework.MetroThemeStyle.Dark;
             this.btn_bots_update.UseSelectable = true;
             this.btn_bots_update.Click += new System.EventHandler(this.btn_bots_update_Click);
-            // 
-            // btn_wallet
-            // 
-            this.btn_wallet.Location = new System.Drawing.Point(136, 378);
-            this.btn_wallet.Name = "btn_wallet";
-            this.btn_wallet.Size = new System.Drawing.Size(124, 33);
-            this.btn_wallet.TabIndex = 14;
-            this.btn_wallet.Text = "Check Wallet Value";
-            this.btn_wallet.Theme = MetroFramework.MetroThemeStyle.Dark;
-            this.btn_wallet.UseSelectable = true;
-            this.btn_wallet.Click += new System.EventHandler(this.btn_wallet_Click);
             // 
             // Main
             // 
@@ -515,7 +502,6 @@
         private MetroFramework.Controls.MetroLabel metroLabel2;
         private MetroFramework.Controls.MetroButton btn_ASF_Restart;
         private MetroFramework.Controls.MetroButton btn_bot;
-        private MetroFramework.Controls.MetroButton btn_wallet;
         public System.Windows.Forms.GroupBox group_auth;
         public MetroFramework.Controls.MetroLabel metroLabel1;
         public MetroFramework.Controls.MetroTextBox txt_IPC;

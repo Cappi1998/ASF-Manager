@@ -91,6 +91,7 @@ namespace ASF_Manager
             }
             catch (Exception ex)
             {
+                Log.error(ex.Message, ex);
                 lbl_status_auth.Text = "Connection Fail";
                 lbl_status_auth.ForeColor = Color.DarkRed;
             }
@@ -140,10 +141,8 @@ namespace ASF_Manager
 
         private void btn_bot_Click(object sender, EventArgs e)
         {
-
             Thread active_games = new Thread(() => Activate_Games());
             active_games.Start();
-
         }
 
         private void txt_IPC_KeyPress(object sender, KeyPressEventArgs e)
@@ -156,40 +155,6 @@ namespace ASF_Manager
         {
             groupbox_função.Visible = false;
             lbl_status_auth.Text = "";
-        }
-
-        private void btn_wallet_Click(object sender, EventArgs e)
-        {
-            var URL = $"http://{Main._Main.txt_IPC.Text}:{Main._Main.txt_PORT.Text}/Api/Bot/asf";
-
-            if (Main._Main.ckc_usepass.Checked)
-            {
-                if (Main._Main.txt_passIPC.Text == "")
-                {
-
-                    Main._Main.lbl_status_auth.Text = "Please enter the IPC password";
-                    Main._Main.lbl_status_auth.ForeColor = Color.Red;
-                    Main._Main.txt_passIPC.Focus();
-                    return;
-                }
-                else
-                {
-                    URL = $"{URL}?password={Main._Main.txt_passIPC.Text}";
-                }
-            }
-
-            var response = new RequestBuilder(URL)
-                .GET()
-                .Execute();
-
-            ASFResponse_BotsResume.Root asf_response = JsonConvert.DeserializeObject<ASFResponse_BotsResume.Root>(response.Content);
-
-            foreach (var asf_bot in asf_response.Result)
-            {
-                Log.info($"{asf_bot.Value.BotName} => {asf_bot.Value.WalletBalance}");
-            }
-
-            Log.pink("Attention: this function is still not converting correctly to the account currency");
         }
 
         public static void Activate_Games()
@@ -276,7 +241,6 @@ namespace ASF_Manager
                             File.WriteAllLines(gameFilePath, arquivo.Skip(1).ToArray());
                         }
 
-
                        Thread.Sleep(500);
                     }
                 }
@@ -284,6 +248,7 @@ namespace ASF_Manager
 
             Main._Main.group_auth.Invoke(new Action(() => Main._Main.group_auth.Enabled = true));
             Main._Main.groupbox_função.Invoke(new Action(() => Main._Main.groupbox_função.Enabled = true));
+            Log.info($"All is Done!");
         }
 
         public static List<int> GetAppIDS(string FileName)
@@ -468,6 +433,7 @@ namespace ASF_Manager
 
                     if(gameIDOwned != 0)
                     {
+                        Log.orange($"<ASF_Owns> <{bot.BotName}> Have AppID {gameIDOwned}");
                         Update_Bots_DB.Add_active_Game_to_File(bot.SteamID, new List<int> { gameIDOwned });
                     }
 
