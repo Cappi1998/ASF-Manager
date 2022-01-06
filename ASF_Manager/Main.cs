@@ -341,7 +341,7 @@ namespace ASF_Manager
             {
                 Update_Bots_DB.Add_active_Game_to_File(SteamID64, AppIDs);
                 string msg = $"{BotName} - {codigo_game} - OK";
-                File.AppendAllText("ActivatedSuccess.txt", msg + "\n");
+                File.AppendAllText("ActivatedSuccess.txt", $"{msg} - {String.Join("_", AppIDs)}\n");
                 Log.info(msg);
                 return "Sucess";
             }
