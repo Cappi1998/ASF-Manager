@@ -494,10 +494,13 @@ namespace ASF_Manager
 
         private void txt_IPC_Leave(object sender, EventArgs e)
         {
+            try
+            {
+                Uri URI = new Uri(txt_IPC.Text);
 
-            Uri URI = new Uri(txt_IPC.Text);
-
-            txt_IPC.Text = URI.Host;
+                txt_IPC.Text = URI.Host;
+            }
+            catch{}
 
             SaveConfig();
         }
