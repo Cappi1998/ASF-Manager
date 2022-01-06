@@ -307,7 +307,7 @@
             this.txt_passIPC.Location = new System.Drawing.Point(127, 60);
             this.txt_passIPC.MaxLength = 32767;
             this.txt_passIPC.Name = "txt_passIPC";
-            this.txt_passIPC.PasswordChar = '\0';
+            this.txt_passIPC.PasswordChar = '*';
             this.txt_passIPC.ScrollBars = System.Windows.Forms.ScrollBars.None;
             this.txt_passIPC.SelectedText = "";
             this.txt_passIPC.SelectionLength = 0;

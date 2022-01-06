@@ -340,7 +340,9 @@ namespace ASF_Manager
             if (content.Contains("OK/NoDetail"))
             {
                 Update_Bots_DB.Add_active_Game_to_File(SteamID64, AppIDs);
-                Log.info($"{BotName} - {codigo_game} - OK");
+                string msg = $"{BotName} - {codigo_game} - OK";
+                File.AppendAllText("ActivatedSuccess.txt", msg + "\n");
+                Log.info(msg);
                 return "Sucess";
             }
             else if (content.Contains("Timeout/Timeout"))
@@ -492,6 +494,11 @@ namespace ASF_Manager
 
         private void txt_IPC_Leave(object sender, EventArgs e)
         {
+
+            Uri URI = new Uri(txt_IPC.Text);
+
+            txt_IPC.Text = URI.Host;
+
             SaveConfig();
         }
 
