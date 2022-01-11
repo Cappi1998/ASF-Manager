@@ -204,14 +204,6 @@ namespace ASF_Manager
 
                 foreach (BotInfo bot in Bots)
                 {
-                    bool botIsOnline = CheckBotIsLogeed(bot.BotName);
-
-                    if (botIsOnline == false)
-                    {
-                        Log.orange($"{bot.BotName} - is Offline");
-                        continue;
-                    }
-
                     var AppIDs = GetAppIDS(gameFilePath);
 
                     if(AppIDs == null)
@@ -223,6 +215,15 @@ namespace ASF_Manager
 
                     if (botNotHaveGames)//se não tiver o jogo fazer a ativação
                     {
+
+                        bool botIsOnline = CheckBotIsLogeed(bot.BotName);
+
+                        if (botIsOnline == false)
+                        {
+                            Log.orange($"{bot.BotName} - is Offline");
+                            continue;
+                        }
+
                         string[] Ler_Arquivo = File.ReadAllLines(gameFilePath);
 
                         if (Ler_Arquivo.Length == 0)
@@ -236,9 +237,13 @@ namespace ASF_Manager
                         
                         string result = Post_Command_Active_Game(bot.BotName, bot.SteamID, Codigo, AppIDs);
 
-                        if(result != "Timeout" && result != "AlreadyPurchased" && result != "RateLimited")
+                        if(result != "Timeout" && result != "AlreadyPurchased" && result != "RateLimited" && result != "AccountLocked")
                         {
                             File.WriteAllLines(gameFilePath, arquivo.Skip(1).ToArray());
+                        }
+                        else
+                        {
+                            Log.pink($"The code will not be discarded, it will be used in the next bot!");
                         }
 
                        Thread.Sleep(500);
@@ -304,7 +309,7 @@ namespace ASF_Manager
 
         }
 
-        //string result: Sucess, Fail, Timeout, DuplicateActivationCode
+        //string result: Timeout, DuplicateActivationCode, AlreadyPurchased,AccountLocked
         public static string Post_Command_Active_Game(string BotName, long SteamID64, string codigo_game, List<int> AppIDs)
         {
             string URL = $"http://{Main._Main.txt_IPC.Text}:{Main._Main.txt_PORT.Text}/Api/Command";
@@ -350,6 +355,11 @@ namespace ASF_Manager
                 Log.orange($"{BotName} - {codigo_game} - Timeout");
                 return "Timeout";
             }
+            else if (content.Contains("Fail/AccountLocked"))
+            {
+                Log.blue(content);
+                return "AccountLocked";
+            }
             else if (content.Contains("Fail/DuplicateActivationCode"))
             {
                 Log.blue(content);
@@ -360,12 +370,10 @@ namespace ASF_Manager
             {
                 Update_Bots_DB.Add_active_Game_to_File(SteamID64, AppIDs);
                 Log.orange(content);
-                Log.pink($"The code will not be discarded, it will be used in the next bot!");
                 return "AlreadyPurchased";
             }else if (content.Contains("Fail/RateLimited"))
             {
                 Log.orange(content);
-                Log.pink($"The code will not be discarded, it will be used in the next bot!");
                 return "RateLimited";
             }
             else
