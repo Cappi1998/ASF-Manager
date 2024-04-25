@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-
 using RestSharp;
-
 
 
 namespace ASF_Manager
 {
-
-
     class RequestBuilder
     {
         private RestRequest request;

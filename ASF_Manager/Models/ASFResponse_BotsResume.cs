@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 
 namespace ASF_Manager.Models
 {
-    class ASFResponse_BotsResume
-    {
         // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
         public class CurrentGamesFarming
         {
@@ -84,11 +82,11 @@ namespace ASF_Manager.Models
             public int WalletBalance { get; set; }
             public int WalletCurrency { get; set; }
         }
-        public class Root
-        {
+        public class ASFResponse_BotsResume
+		{
             public Dictionary<string, BotInfo> Result { get; set; }
             public string Message { get; set; }
             public bool Success { get; set; }
         }
-    }
+   
 }

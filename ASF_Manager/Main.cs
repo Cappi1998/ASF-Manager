@@ -1,19 +1,14 @@
 ﻿using ASF_Manager.Models;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
@@ -110,7 +105,7 @@ namespace ASF_Manager
                 .POST()
                 .Execute();
 
-            ASFResponse_BotsResume.Root result = JsonConvert.DeserializeObject<ASFResponse_BotsResume.Root>(response);
+            ASFResponse_BotsResume result = JsonConvert.DeserializeObject<ASFResponse_BotsResume>(response);
 
             if (!result.Success == true)
             {
@@ -146,11 +141,16 @@ namespace ASF_Manager
         {
             var URL = $"http://{Main._Main.txt_IPC.Text}:{Main._Main.txt_PORT.Text}/Api/Bot/asf";
 
+            if (Main._Main.ckc_usepass.Checked)
+            {
+                URL = $"http://{Main._Main.txt_IPC.Text}:{Main._Main.txt_PORT.Text}/Api/Bot/asf?password={Main._Main.txt_passIPC.Text}";
+            }
+
             var response = new RequestBuilder(URL)
                 .GET()
                 .Execute();
 
-            ASFResponse_BotsResume.Root asf_response = JsonConvert.DeserializeObject<ASFResponse_BotsResume.Root>(response);
+            ASFResponse_BotsResume asf_response = JsonConvert.DeserializeObject<ASFResponse_BotsResume>(response);
 
             foreach (var asf_bot in asf_response.Result)
             {
@@ -165,22 +165,9 @@ namespace ASF_Manager
             Main._Main.group_auth.Invoke(new Action(() => Main._Main.group_auth.Enabled = false));
             Main._Main.groupbox_função.Invoke(new Action(() => Main._Main.groupbox_função.Enabled = false));
 
-
             string[] gamesFiles = Directory.GetFiles(@"active", "*.txt");//pegamos informações da pasta
 
-            string[] botinfoFiles = Directory.GetFiles(@"bots", "*.json");//pegamos informações da pasta
-
-            List<BotInfo> Bots = new List<BotInfo> { };
-
-            foreach (var bot in botinfoFiles)
-            {
-                BotInfo bot1 = JsonConvert.DeserializeObject<BotInfo>(File.ReadAllText(@bot));
-
-                if (bot1.vds == Main._Main.txt_IPC.Text + ":" + Main._Main.txt_PORT.Text)
-                {
-                    Bots.Add(bot1);
-                }
-            }
+            List<BotInfo> Bots = Update_Bots();
 
             int process = 0;
             foreach (var game in gamesFiles)
@@ -215,19 +202,35 @@ namespace ASF_Manager
 
                 foreach (var bot in Bots)
                 {
-                    if (!bot.GamesHave.Contains(ID_GAME))//se não tiver o jogo fazer a ativação
+                    var BotHaveGameResult = BotHaveGame(bot.BotName, ID_GAME);
+					if (BotHaveGameResult is "false")//se não tiver o jogo fazer a ativação
                     {
-                        string[] Ler_Arquivo = File.ReadAllLines(game);
-                        if (Ler_Arquivo.Length == 0)
+                        string[] CdKeyList = File.ReadAllLines(game);
+
+                        if (CdKeyList.Length == 0)
                         {
                             File.Delete(game);
                             break;
                         }
-                        string Codigo = Ler_Arquivo[0];
-                        var arquivo = File.ReadAllLines(game);
-                        File.WriteAllLines(game, arquivo.Skip(1).ToArray());
 
-                        Post_Command_Active_Game(bot.BotName, bot.SteamID, Codigo, ID_GAME);
+                        string FirCdKey = CdKeyList[0];
+                        File.WriteAllLines(game, CdKeyList.Skip(1).ToArray());
+
+						ASFResponse_ActiveGame response = PostCommandActiveGame(bot.BotName, bot.SteamID, FirCdKey, ID_GAME);
+
+                        if(response.ActivedSuccess == false)
+                        {
+                            if(response.Status.Contains("DuplicateActivationCode") == false && response.Status.Contains("OK/NoDetail") == false)
+                            {
+								//Put the code back on the list as it was not used
+								File.WriteAllLines(game, CdKeyList.ToArray());
+                                Log.orange($"CdKey:{FirCdKey} was not used.");
+							}
+						}
+                    }
+                    else if(BotHaveGameResult is "error")
+                    {
+                        Log.error($"Failed to check if bot {bot.BotName} has AppID:{ID_GAME}");
                     }
                 }
             }
@@ -237,11 +240,123 @@ namespace ASF_Manager
 
         }
 
-        public static void Post_Command_Active_Game(string BotName, long SteamID64, string codigo_game, string AppID)
+		public static List<BotInfo> Update_Bots()
+		{
+			Main._Main.group_auth.Invoke(new Action(() => Main._Main.group_auth.Enabled = false));
+			Main._Main.groupbox_função.Invoke(new Action(() => Main._Main.groupbox_função.Enabled = false));
+
+			var URL = $"http://{Main._Main.txt_IPC.Text}:{Main._Main.txt_PORT.Text}/Api/Bot/asf";
+
+			if (Main._Main.ckc_usepass.Checked)
+			{
+				if (string.IsNullOrEmpty(Main._Main.txt_passIPC.Text))
+				{
+					Main._Main.lbl_status_auth.Text = "Please enter the IPC password";
+					Main._Main.lbl_status_auth.ForeColor = Color.Red;
+					Main._Main.txt_passIPC.Focus();
+					return null;
+				}
+				else
+				{
+					URL = $"{URL}?password={Main._Main.txt_passIPC.Text}";
+				}
+			}
+
+			var response = new RequestBuilder(URL)
+				.GET()
+				.Execute();
+
+			ASFResponse_BotsResume asf_response = JsonConvert.DeserializeObject<ASFResponse_BotsResume>(response);
+
+            List<BotInfo> BotsList = new List<BotInfo>();
+
+			Log.orange("Starting Update Bots Database...");
+			int counter = 0;
+			foreach (var asf_Bot in asf_response.Result)
+			{
+				Log.info("Bots Update.. {0}. {1}/{2}", asf_Bot.Value.BotName, ++counter, asf_response.Result.Count);
+
+				if (asf_Bot.Value.BotConfig.Enabled == false)
+				{
+					Log.orange($"Account: {asf_Bot.Value.BotName} - was set to disabled, on the ASF config!");
+					continue;
+				}
+
+				if (asf_Bot.Value.SteamID == 0)
+				{
+					Log.orange($"Account: {asf_Bot.Value.BotName} - not yet started!");
+					continue;
+				}
+
+                BotsList.Add(asf_Bot.Value);
+			}
+
+			Main._Main.group_auth.Invoke(new Action(() => Main._Main.group_auth.Enabled = true));
+			Main._Main.groupbox_função.Invoke(new Action(() => Main._Main.groupbox_função.Enabled = true));
+
+            return BotsList;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="botName"></param>
+		/// <param name="AppID"></param>
+		/// <returns>true, false, error</returns>
+		public static string BotHaveGame(string botName, string AppID)
+        {
+			string URL = $"http://{Main._Main.txt_IPC.Text}:{Main._Main.txt_PORT.Text}/Api/Command";
+
+			if (Main._Main.ckc_usepass.Checked)
+			{
+				URL = $"http://{Main._Main.txt_IPC.Text}:{Main._Main.txt_PORT.Text}/Api/Command?password={Main._Main.txt_passIPC.Text}";
+			}
+
+			Exec_Command comando = new Exec_Command { Command = $"owns {botName} {AppID}" };
+
+			string json = JsonConvert.SerializeObject(comando);
+
+			var http = (HttpWebRequest)WebRequest.Create(new Uri(URL));
+			http.Accept = "application/json";
+			http.ContentType = "application/json";
+			http.Method = "POST";
+
+
+			ASCIIEncoding encoding = new ASCIIEncoding();
+			Byte[] bytes = encoding.GetBytes(json);
+
+			Stream newStream = http.GetRequestStream();
+			newStream.Write(bytes, 0, bytes.Length);
+			newStream.Close();
+
+			var response = http.GetResponse();
+
+			var stream = response.GetResponseStream();
+			var sr = new StreamReader(stream);
+			var content = sr.ReadToEnd();
+
+            if (content.Contains("Owned already"))
+            {
+                return "true";
+            }
+            else if (content.Contains("Not owned yet"))
+            {
+				return "false";
+			}
+
+            return "error";
+		}
+
+        public static ASFResponse_ActiveGame PostCommandActiveGame(string BotName, long SteamID64, string gameCdKey, string AppID)
         {
             string URL = $"http://{Main._Main.txt_IPC.Text}:{Main._Main.txt_PORT.Text}/Api/Command";
 
-            Exec_Command comando = new Exec_Command { Command = "redeem " + BotName + " " + codigo_game };
+            if (Main._Main.ckc_usepass.Checked)
+			{
+                URL = $"http://{Main._Main.txt_IPC.Text}:{Main._Main.txt_PORT.Text}/Api/Command?password={Main._Main.txt_passIPC.Text}";
+			}
+
+            Exec_Command comando = new Exec_Command { Command = "redeem " + BotName + " " + gameCdKey };
 
             string json = JsonConvert.SerializeObject(comando);
 
@@ -264,43 +379,30 @@ namespace ASF_Manager
             var sr = new StreamReader(stream);
             var content = sr.ReadToEnd();
 
-            bool sucesso = content.Contains("OK/NoDetail");
+            ASFResponse_ActiveGame ActiveGameResponse = JsonConvert.DeserializeObject<ASFResponse_ActiveGame>(content);
 
-
-            if (sucesso == false)
+            if(ActiveGameResponse != null)
             {
-                Log.blue(content);
-                File.AppendAllText("activation_fail.txt", content + "\n");
+                if (ActiveGameResponse.Status.Contains("OK/NoDetail"))
+                {
+                    ActiveGameResponse.ActivedSuccess = true;
+					Log.info($"{BotName} - {gameCdKey} - OK");
+                }
+                else if(ActiveGameResponse.Status.Contains("DuplicateActivationCode"))
+                {
+					Log.blue(content);
+					File.AppendAllText("activation_fail.txt", content + "\n");
+				}
+			}
 
-            }
-            else
-            {
-                Update_Bots_DB.Add_active_Game_to_File(SteamID64, AppID);
-                Log.info($"{BotName} - {codigo_game} - OK");
-            }
+			File.AppendAllText("response.txt", content + "\n");
 
-            File.AppendAllText("response.txt", content + "\n");
-        }
-
-
-        private void btn_bots_update_Click(object sender, EventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(txt_steamAPI.Text))
-            {
-                MessageBox.Show("Error - Steam API Key is Null! Enter valid  Steam API key", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            else
-            {
-                Thread th = new Thread(() => Update_Bots_DB.Update_Bots());
-                th.Start();
-            }
-        }
+            return ActiveGameResponse;
+		}
 
         private void btn_open_web_Click(object sender, EventArgs e)
         {
-
             System.Diagnostics.Process.Start("http://" + txt_IPC.Text + ":" + txt_PORT.Text);
-
         }
 
         private void btn_active_paste_open_Click(object sender, EventArgs e)
@@ -315,11 +417,6 @@ namespace ASF_Manager
 
         private void Main_Load(object sender, EventArgs e)
         {
-            if (!File.Exists(@"Bots"))
-            {
-                System.IO.Directory.CreateDirectory(@"Bots");
-            }
-
             if (!File.Exists(@"Active"))
             {
                 System.IO.Directory.CreateDirectory(@"Active");
