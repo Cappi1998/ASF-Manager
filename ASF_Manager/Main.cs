@@ -54,7 +54,7 @@ namespace ASF_Manager
                 .GET()
                 .Execute();
 
-            ASFResponse_MainConfig.Root result = JsonConvert.DeserializeObject<ASFResponse_MainConfig.Root>(response);
+            ASFResponse_MainConfig.Root result = JsonConvert.DeserializeObject<ASFResponse_MainConfig.Root>(response.Content);
 
             try
             {
@@ -105,7 +105,7 @@ namespace ASF_Manager
                 .POST()
                 .Execute();
 
-            ASFResponse_BotsResume result = JsonConvert.DeserializeObject<ASFResponse_BotsResume>(response);
+            ASFResponse_BotsResume result = JsonConvert.DeserializeObject<ASFResponse_BotsResume>(response.Content);
 
             if (!result.Success == true)
             {
@@ -150,7 +150,7 @@ namespace ASF_Manager
                 .GET()
                 .Execute();
 
-            ASFResponse_BotsResume asf_response = JsonConvert.DeserializeObject<ASFResponse_BotsResume>(response);
+            ASFResponse_BotsResume asf_response = JsonConvert.DeserializeObject<ASFResponse_BotsResume>(response.Content);
 
             foreach (var asf_bot in asf_response.Result)
             {
@@ -266,7 +266,7 @@ namespace ASF_Manager
 				.GET()
 				.Execute();
 
-			ASFResponse_BotsResume asf_response = JsonConvert.DeserializeObject<ASFResponse_BotsResume>(response);
+			ASFResponse_BotsResume asf_response = JsonConvert.DeserializeObject<ASFResponse_BotsResume>(response.Content);
 
             List<BotInfo> BotsList = new List<BotInfo>();
 
